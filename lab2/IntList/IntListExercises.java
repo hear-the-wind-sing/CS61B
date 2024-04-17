@@ -10,7 +10,12 @@ public class IntListExercises {
      */
     public static void addConstant(IntList lst, int c) {
         IntList head = lst;
-        while (head.rest != null) {
+        // bug: the last IntNode.rest is null ,the last item is skipped without adding a constant
+//        while (head.rest != null) {
+//            head.first += c;
+//            head = head.rest;
+//        }
+        while (head != null) {
             head.first += c;
             head = head.rest;
         }
@@ -26,9 +31,19 @@ public class IntListExercises {
     public static void setToZeroIfMaxFEL(IntList L) {
         IntList p = L;
         while (p != null) {
-            if (firstDigitEqualsLastDigit(max(p))) {
+            // nested function call, hard to debug
+//            if (firstDigitEqualsLastDigit(max(p))) {
+//                p.first = 0;
+//            }
+
+            // change the code to debug
+            int currentMax = max(p);
+            boolean firstEqualsLast = firstDigitEqualsLastDigit(currentMax);
+            if (firstEqualsLast) {
                 p.first = 0;
             }
+
+
             p = p.rest;
         }
     }
@@ -54,7 +69,11 @@ public class IntListExercises {
         while (x > 10) {
             x = x / 10;
         }
-        int firstDigit = x % 10;
+        // bug
+        //int firstDigit = x % 10;
+
+        //fix the bug
+        int firstDigit = x;
         return firstDigit == lastDigit;
     }
 
@@ -77,6 +96,10 @@ public class IntListExercises {
             lst.first *= lst.first;
         }
 
-        return currElemIsPrime || squarePrimes(lst.rest);
+        //when currElemIsPrime is true ,squarePrimes(lst.rest) will be skipped
+        //return currElemIsPrime || squarePrimes(lst.rest);
+
+        //fix the bug
+        return squarePrimes(lst.rest) || currElemIsPrime;
     }
 }
