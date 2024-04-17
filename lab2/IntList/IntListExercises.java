@@ -66,10 +66,13 @@ public class IntListExercises {
      */
     public static boolean firstDigitEqualsLastDigit(int x) {
         int lastDigit = x % 10;
-        while (x > 10) {
+        //bug when x = 10 , loop will end, and the firstDigit will be wrong
+//        while (x > 10) {
+//            x = x / 10;
+//        }
+        while (x >= 10) {
             x = x / 10;
         }
-        // bug
         //int firstDigit = x % 10;
 
         //fix the bug
