@@ -17,12 +17,42 @@ public class TimeSLList {
         }
     }
 
+    public static  void timeSlisthelper(AList<Integer> Ns, AList<Double> times, AList<Integer> opCounts, int N, int M){
+
+        Ns.addLast(N);
+        opCounts.addLast(M);
+        SLList<Integer> timelist = new SLList<>();
+
+        for(int i = 0; i < N; i++){
+            timelist.addLast(i);
+        }
+
+        Stopwatch sw = new Stopwatch();
+
+        for (int i = 0; i < M; i++){
+            timelist.getLast();
+        }
+
+        double timeInSeconds = sw.elapsedTime();
+        times.addLast(timeInSeconds);
+    }
+
     public static void main(String[] args) {
         timeGetLast();
     }
 
     public static void timeGetLast() {
         // TODO: YOUR CODE HERE
+        int startN = 1000;
+        int M = 10000;
+        AList<Integer> Ns = new AList<>();
+        AList<Double> times = new AList<>();
+        AList<Integer> opCounts = new AList<>();
+        for(int i=0; i < 8; i++){
+            timeSlisthelper(Ns, times, opCounts, startN, M);
+            startN *= 2;
+        }
+        printTimingTable(Ns, times , opCounts);
     }
 
 }
