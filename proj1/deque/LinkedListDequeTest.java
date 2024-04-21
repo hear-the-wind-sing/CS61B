@@ -136,4 +136,19 @@ public class LinkedListDequeTest {
 
       //  */
     }
+
+    @Test
+    public void equalsAndIterator(){
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
+        LinkedListDeque<Integer> lld2 = new LinkedListDeque<Integer>();
+        for (int i = 0; i < 10; i++) {
+            lld1.addLast(i);
+            lld2.addLast(i);
+        }
+        System.out.println(lld1.getRecursive(3));
+        if (lld1.equals((Object)lld2)) System.out.println("Equal!");
+        for(int i : lld1) {
+            System.out.print(i);
+        }
+    }
 }

@@ -1,12 +1,35 @@
 package deque;
 
-public class ArrayDeque<Item> {
-    private Item[] items;
+import java.util.Iterator;
+
+public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
+    private T[] items;
     private int size;
     private int startIndex;
+
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int pointer;
+        public ArrayDequeIterator(){
+            pointer = startIndex;
+        }
+
+        public boolean hasNext() {
+            return pointer != (size + startIndex) % items.length;
+        }
+
+        public T next() {
+            T returnItem = items[pointer];
+            pointer = (pointer + 1) % items.length;
+            return returnItem;
+        }
+    }
+
+    public Iterator<T> iterator() {
+        return new ArrayDeque.ArrayDequeIterator();
+    }
     //private int endIndex;
     public ArrayDeque() {
-        items = (Item[]) new Object[8];
+        items = (T[]) new Object[8];
         size = 0;
         startIndex = 0;
         //endIndex = 0;
@@ -14,15 +37,15 @@ public class ArrayDeque<Item> {
     public int size() {
         return size;
     }
-    public boolean isEmpty() {
-        if (size == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    public boolean isEmpty() {
+//        if (size == 0) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
     public void resize(int capacity) {
-        Item[] a = (Item[]) new Object[capacity];
+        T[] a = (T[]) new Object[capacity];
         int curIndex = startIndex % items.length;
         for (int i = 0; i < size ; i++) {
             a[i] = items[curIndex];
@@ -41,7 +64,7 @@ public class ArrayDeque<Item> {
         }
         System.out.println(" ");
     }
-    public void addFirst(Item x) {
+    public void addFirst(T x) {
         if(size == items.length) {
             resize(size * 2);
         }
@@ -50,7 +73,7 @@ public class ArrayDeque<Item> {
         startIndex = (startIndex + items.length - 1) % items.length;
         size++;
     }
-    public void addLast(Item x) {
+    public void addLast(T x) {
         if (size == items.length) {
             resize(size * 2);
         }
@@ -58,7 +81,7 @@ public class ArrayDeque<Item> {
         items[(startIndex + size ) % items.length] = x;
         size++;
     }
-    public Item removeFirst() {
+    public T removeFirst() {
         if (size == 0) {
             return null;
         }
@@ -67,13 +90,13 @@ public class ArrayDeque<Item> {
             resize(items.length / 4);
         }
 
-        Item firstItem = items[startIndex];
+        T firstT = items[startIndex];
         items[startIndex] = null;
         size--;
         startIndex++;
-        return firstItem;
+        return firstT;
     }
-    public Item removeLast() {
+    public T removeLast() {
         if (size == 0) {
             return null;
         }
@@ -82,12 +105,35 @@ public class ArrayDeque<Item> {
             resize(items.length / 4);
         }
 
-        Item lastItem = items[(startIndex + size - 1) % items.length];
+        T lastT = items[(startIndex + size - 1) % items.length];
         items[(startIndex + size - 1) % items.length] = null;
         size--;
-        return lastItem;
+        return lastT;
     }
-    public Item get(int index) {
+    public T get(int index) {
         return items[(startIndex + index) % items.length];
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ArrayDeque)) {
+            return false;
+        }
+        ArrayDeque<T> ad = (ArrayDeque<T>) o;
+        if (ad.size() != size) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            if (ad.get(i) != get(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

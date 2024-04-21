@@ -136,4 +136,18 @@ public class ArrayDequeTest {
 
         //  */
     }
+
+    @Test
+    public void equalsAndIterator(){
+        ArrayDeque<Integer> ad1 = new ArrayDeque<Integer>();
+        ArrayDeque<Integer> ad2 = new ArrayDeque<Integer>();
+        for (int i = 0; i < 10; i++) {
+            ad1.addLast(i);
+            ad2.addLast(i);
+        }
+        if (ad1.equals((Object)ad2)) System.out.println("Equal!");
+        for(int i : ad1) {
+            System.out.print(i);
+        }
+    }
 }
