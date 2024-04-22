@@ -2,14 +2,14 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private T[] items;
     private int size;
     private int startIndex;
 
     private class ArrayDequeIterator implements Iterator<T> {
         private int pointer;
-        public ArrayDequeIterator(){
+        public ArrayDequeIterator() {
             pointer = startIndex;
         }
 
@@ -37,17 +37,17 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
     public int size() {
         return size;
     }
-//    public boolean isEmpty() {
-//        if (size == 0) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
-    public void resize(int capacity) {
+    //    public boolean isEmpty() {
+    //        if (size == 0) {
+    //            return true;
+    //        } else {
+    //            return false;
+    //        }
+    //    }
+    private void resize(int capacity) {
         T[] a = (T[]) new Object[capacity];
         int curIndex = startIndex % items.length;
-        for (int i = 0; i < size ; i++) {
+        for (int i = 0; i < size; i++) {
             a[i] = items[curIndex];
             curIndex = (curIndex + 1) % items.length;
         }
@@ -57,7 +57,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
     public void printDeque() {
         int i = startIndex % items.length;
         int cnt = 0;
-        while(cnt != size) {
+        while (cnt != size) {
             System.out.print(items[i] + " ");
             i = (i + 1) % items.length;
             cnt++;
@@ -65,7 +65,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
         System.out.println(" ");
     }
     public void addFirst(T x) {
-        if(size == items.length) {
+        if (size == items.length) {
             resize(size * 2);
         }
 
@@ -78,7 +78,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
             resize(size * 2);
         }
 
-        items[(startIndex + size ) % items.length] = x;
+        items[(startIndex + size) % items.length] = x;
         size++;
     }
     public T removeFirst() {
@@ -86,7 +86,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
             return null;
         }
 
-        if(items.length >= 16 && size < items.length / 4) {
+        if (items.length >= 16 && size < items.length / 4) {
             resize(items.length / 4);
         }
 
@@ -101,7 +101,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
             return null;
         }
 
-        if(items.length >= 16 && size < items.length / 4) {
+        if (items.length >= 16 && size < items.length / 4) {
             resize(items.length / 4);
         }
 
@@ -125,7 +125,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T>{
         if (!(o instanceof ArrayDeque)) {
             return false;
         }
-        ArrayDeque<T> ad = (ArrayDeque<T>) o;
+        ArrayDeque<?> ad = (ArrayDeque<?>) o;
         if (ad.size() != size) {
             return false;
         }
