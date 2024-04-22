@@ -3,7 +3,7 @@ package deque;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-
+import edu.princeton.cs.algs4.StdRandom;
 /** Performs some basic linked list tests. */
 public class LinkedListDequeTest {
 
@@ -139,19 +139,59 @@ public class LinkedListDequeTest {
 
     @Test
     public void equalsAndIterator(){
-        LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
-        LinkedListDeque<Integer> lld2 = new LinkedListDeque<Integer>();
-        LinkedListDeque<String> lld3 = new LinkedListDeque<>();
+//        LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
+//        LinkedListDeque<Integer> lld2 = new LinkedListDeque<Integer>();
+//        LinkedListDeque<String> lld3 = new LinkedListDeque<>();
+//        for (int i = 0; i < 10; i++) {
+//            lld1.addLast(i);
+//            lld2.addLast(i);
+//            lld3.addLast("1");
+//        }
+//        System.out.println(lld1.getRecursive(3));
+//        if (lld1.equals((Object)lld2)) System.out.println("Equal!");
+//        if (!(lld3.equals((Object)lld2))) System.out.println("Not Equal!");
+//        for(int i : lld1) {
+//            System.out.print(i);
+//        }
+        LinkedListDeque<String> lld1 = new LinkedListDeque<>();
+        LinkedListDeque<String> lld2 = new LinkedListDeque<>();
+        String number1 = new String("1");
         for (int i = 0; i < 10; i++) {
-            lld1.addLast(i);
-            lld2.addLast(i);
-            lld3.addLast("1");
+            lld1.addLast(number1);
+            lld2.addLast("1");
         }
         System.out.println(lld1.getRecursive(3));
         if (lld1.equals((Object)lld2)) System.out.println("Equal!");
-        if (!(lld3.equals((Object)lld2))) System.out.println("Not Equal!");
-        for(int i : lld1) {
+        //if (!(lld3.equals((Object)lld2))) System.out.println("Not Equal!");
+        for(String i : lld1) {
             System.out.print(i);
+        }
+    }
+    @Test
+    public void randomizedTest() {
+        LinkedListDeque<Integer> linkedListDeque = new LinkedListDeque<>();
+
+        int N = 1000000;
+        for (int i = 0; i < N; i += 1) {
+            int operationNumber = StdRandom.uniform(0, 6);
+            if (operationNumber == 0) {
+                int randVal = StdRandom.uniform(0, 100);
+                linkedListDeque.addFirst(randVal);
+            } else if (operationNumber == 1) {
+                int randVal = StdRandom.uniform(0, 100);
+                linkedListDeque.addLast(randVal);
+            } else if (linkedListDeque.size() == 0) {
+                assertTrue(linkedListDeque.isEmpty());
+            } else if (operationNumber == 2) {
+                assertTrue(linkedListDeque.size() > 0);
+            } else if (operationNumber == 3) {
+                linkedListDeque.removeFirst();
+            } else if (operationNumber == 4) {
+                linkedListDeque.removeLast();
+            } else if (operationNumber == 5) {
+                int randIndex = StdRandom.uniform(0, linkedListDeque.size());
+                linkedListDeque.get(randIndex);
+            }
         }
     }
 }

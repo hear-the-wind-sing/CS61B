@@ -27,8 +27,9 @@ public class TTFAF {
         // GuitarPlayer player = new GuitarPlayer(new java.io.File("path/to/music.mid"));
         // player.play();
 
-//         GuitarPlayer player = new GuitarPlayer(new java.io.File("C:\\Users\\lazy\\Downloads\\_Crychic_Ver..mid"));
-//         player.play();
+        //GuitarPlayer player =
+        // new GuitarPlayer(new java.io.File("C:\\Users\\lazy\\Downloads\\_Crychic_Ver..mid"));
+        //player.play();
     }
 
     private static final String TTFAF =
