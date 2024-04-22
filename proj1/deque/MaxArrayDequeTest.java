@@ -6,6 +6,8 @@ import java.util.Comparator;
 
 import static org.junit.Assert.assertEquals;
 
+import edu.princeton.cs.algs4.StdRandom;
+
 public class MaxArrayDequeTest {
 
     private static class IntComparator implements Comparator<Integer> {
@@ -24,4 +26,5 @@ public class MaxArrayDequeTest {
 
         assertEquals((Integer) 4, mad.max());
     }
+
 }

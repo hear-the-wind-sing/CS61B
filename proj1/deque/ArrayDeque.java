@@ -9,17 +9,20 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     private class ArrayDequeIterator implements Iterator<T> {
         private int pointer;
+        private int cnt;
         ArrayDequeIterator() {
             pointer = startIndex;
+            cnt = 0;
         }
 
         public boolean hasNext() {
-            return pointer != (size + startIndex) % items.length;
+            return cnt < size;
         }
 
         public T next() {
             T returnItem = items[pointer];
             pointer = (pointer + 1) % items.length;
+            cnt++;
             return returnItem;
         }
     }
@@ -93,7 +96,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         T firstT = items[startIndex];
         items[startIndex] = null;
         size--;
-        startIndex++;
+        startIndex = (startIndex + 1) % items.length;
         return firstT;
     }
     public T removeLast() {
@@ -122,10 +125,10 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof ArrayDeque)) {
+        if (!(o instanceof Deque)) {
             return false;
         }
-        ArrayDeque<?> ad = (ArrayDeque<?>) o;
+        Deque<?> ad = (Deque<?>) o;
         if (ad.size() != size) {
             return false;
         }
