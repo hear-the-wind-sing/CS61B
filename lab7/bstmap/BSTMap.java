@@ -3,19 +3,19 @@ package bstmap;
 import java.util.Iterator;
 import java.util.Set;
 
-public class BSTMap<Key extends Comparable<Key>, Value> implements Map61B<Key, Value> {
+public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private class BSTNode {
         private BSTNode left;
         private BSTNode right;
-        private Key key;
-        private Value value;
-        BSTNode(BSTNode l, BSTNode r, Key k, Value v) {
+        private K key;
+        private V value;
+        BSTNode(BSTNode l, BSTNode r, K k, V v) {
             left = l;
             right = r;
             key = k;
             value = v;
         }
-        public void put(Key putK, Value putV) {
+        public void put(K putK, V putV) {
             if (key.compareTo(putK) > 0) {
                 if (left == null) {
                     left = new BSTNode(null, null, putK, putV);
@@ -30,7 +30,7 @@ public class BSTMap<Key extends Comparable<Key>, Value> implements Map61B<Key, V
                 this.right.put(putK, putV);
             }
         }
-        public Value get(Key getK) {
+        public V get(K getK) {
             if (key.equals(getK)) {
                 return value;
             } else if (key.compareTo(getK) > 0) {
@@ -45,7 +45,7 @@ public class BSTMap<Key extends Comparable<Key>, Value> implements Map61B<Key, V
                 return this.right.get(getK);
             }
         }
-        public boolean contains(Key conK) {
+        public boolean contains(K conK) {
             if (key.equals(conK)) {
                 return true;
             } else if (key.compareTo(conK) > 0) {
@@ -68,14 +68,14 @@ public class BSTMap<Key extends Comparable<Key>, Value> implements Map61B<Key, V
         size = 0;
         //throw new UnsupportedOperationException("This operation is not supported.");
     }
-    public boolean containsKey(Key key) {
+    public boolean containsKey(K key) {
         if (root == null) {
             return false;
         }
         return root.contains(key);
         //throw new UnsupportedOperationException("This operation is not supported.");
     }
-    public Value get(Key key) {
+    public V get(K key) {
         if (root == null) {
             return null;
         }
@@ -86,7 +86,7 @@ public class BSTMap<Key extends Comparable<Key>, Value> implements Map61B<Key, V
         return size;
         //throw new UnsupportedOperationException("This operation is not supported.");
     }
-    public void put(Key key, Value value) {
+    public void put(K key, V value) {
         size++;
         if (root == null) {
             root = new BSTNode(null, null, key, value);
@@ -95,16 +95,19 @@ public class BSTMap<Key extends Comparable<Key>, Value> implements Map61B<Key, V
         root.put(key, value);
         //throw new UnsupportedOperationException("This operation is not supported.");
     }
-    public Set<Key> keySet() {
+    public Set<K> keySet() {
         throw new UnsupportedOperationException("This operation is not supported.");
     }
-    public Value remove(Key key) {
+    public V remove(K key) {
         throw new UnsupportedOperationException("This operation is not supported.");
     }
-    public Value remove(Key key, Value value) {
+    public V remove(K key, V value) {
         throw new UnsupportedOperationException("This operation is not supported.");
     }
-    public Iterator<Key> iterator() {
+    public Iterator<K> iterator() {
+        throw new UnsupportedOperationException("This operation is not supported.");
+    }
+    public void printInOrder() {
         throw new UnsupportedOperationException("This operation is not supported.");
     }
 }
