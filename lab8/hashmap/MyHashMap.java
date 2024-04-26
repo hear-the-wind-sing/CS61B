@@ -147,7 +147,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             resize(buckets.length * 2);
         }
     }
-    public void resize(int  capacity) {
+    private void resize(int  capacity) {
         Set<Node> nodeSet = nodeSet();
         buckets = createTable(capacity);
         size = 0;
@@ -155,7 +155,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             put(node.key, node.value);
         }
     }
-    public Set<Node> nodeSet() {
+    private Set<Node> nodeSet() {
         HashSet<Node> nodeSet = new HashSet<>();
         for (int i = 0; i < buckets.length; i++) {
             for (Node node : buckets[i]) {
@@ -175,10 +175,29 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         //throw new UnsupportedOperationException("This operation is not supported.");
     }
     public V remove(K key) {
-        throw new UnsupportedOperationException("This operation is not supported.");
+        int index = Math.floorMod(key.hashCode(), buckets.length);
+        for (Node node : buckets[index]) {
+            if(node.key.equals(key)){
+                buckets[index].remove(node);
+                return node.value;
+            }
+        }
+        return null;
+        //throw new UnsupportedOperationException("This operation is not supported.");
     }
     public V remove(K key, V value) {
-        throw new UnsupportedOperationException("This operation is not supported.");
+        int index = Math.floorMod(key.hashCode(), buckets.length);
+        for (Node node : buckets[index]) {
+            if(node.key.equals(key)){
+                if(node.value == value) {
+                    buckets[index].remove(node);
+                    return node.value;
+                }
+                return null;
+            }
+        }
+        return null;
+        //throw new UnsupportedOperationException("This operation is not supported.");
     }
     public Iterator<K> iterator() {
         return keySet().iterator();
