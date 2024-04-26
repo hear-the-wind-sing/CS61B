@@ -103,7 +103,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         //return null;
     }
 
-    // TODO: Implement the methods of the Map61B Interface below
+
     // Your code won't compile until you do so!
     public void clear() {
         size = 0;
@@ -112,8 +112,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
     public boolean containsKey(K key) {
         int index = Math.floorMod(key.hashCode(), buckets.length);
-        for(Node node : buckets[index]) {
-            if(node.key.equals(key)) {
+        for (Node node : buckets[index]) {
+            if (node.key.equals(key)) {
                 return true;
             }
         }
@@ -122,8 +122,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
     public V get(K key) {
         int index = Math.floorMod(key.hashCode(), buckets.length);
-        for(Node node : buckets[index]) {
-            if(node.key.equals(key)) {
+        for (Node node : buckets[index]) {
+            if (node.key.equals(key)) {
                 return node.value;
             }
         }
@@ -137,29 +137,28 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         int index = Math.floorMod(key.hashCode(), buckets.length);
         for (Node node : buckets[index]) {
             if (node.key.equals(key)) {
-               node.value = value;
-               return;
+                node.value = value;
+                return;
             }
         }
         buckets[index].add(createNode(key, value));
         size++;
-        if ((double)(size / buckets.length) > LOADFACTOR) {
+        if ((double) (size / buckets.length) > LOADFACTOR) {
             resize(buckets.length * 2);
         }
-//        throw new UnsupportedOperationException("This operation is not supported.");
     }
     public void resize(int  capacity) {
         Set<Node> nodeSet = nodeSet();
         buckets = createTable(capacity);
         size = 0;
-        for(Node node: nodeSet){
-            put(node.key,node.value);
+        for (Node node: nodeSet) {
+            put(node.key, node.value);
         }
     }
     public Set<Node> nodeSet() {
         HashSet<Node> nodeSet = new HashSet<>();
         for (int i = 0; i < buckets.length; i++) {
-            for(Node node : buckets[i]){
+            for (Node node : buckets[i]) {
                 nodeSet.add(node);
             }
         }
@@ -168,7 +167,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     public Set<K> keySet() {
         HashSet<K> kSet = new HashSet<>();
         for (int i = 0; i < buckets.length; i++) {
-            for(Node node : buckets[i]){
+            for (Node node : buckets[i]) {
                 kSet.add(node.key);
             }
         }
@@ -181,18 +180,16 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     public V remove(K key, V value) {
         throw new UnsupportedOperationException("This operation is not supported.");
     }
-    public Iterator<K> iterator(){
+    public Iterator<K> iterator() {
         return keySet().iterator();
-//        return new MyHashMapIterator();
-        //throw new UnsupportedOperationException("This operation is not supported.");
     }
-//    private class MyHashMapIterator implements Iterator<K> {
-//        private Iterator<K> iterator = buckets[0].iterator();
-//        public boolean hasNext(){
-//
-//        }
-//        public K next(){
-//
-//        }
-//    }
+    //    private class MyHashMapIterator implements Iterator<K> {
+    //        private Iterator<K> iterator = buckets[0].iterator();
+    //        public boolean hasNext(){
+    //
+    //        }
+    //        public K next(){
+    //
+    //        }
+    //    }
 }
