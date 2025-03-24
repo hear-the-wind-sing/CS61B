@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.Date; // TODO: You'll likely use this in this class
 import java.util.Map;
 import java.util.HashMap;
+import java.text.SimpleDateFormat;
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
@@ -79,12 +80,14 @@ public class Commit implements Serializable, Dumpable {
         System.out.println(getDate());
     }
     public void print(String sha1) {
-        System.out.println("---");
+        System.out.println("===");
         System.out.println("commit " + sha1);
         if (firstParent != null && secondParent != null) {
             System.out.println("Merge: " + firstParent.substring(0, 7) + " " + secondParent.substring(0, 7));
         }
-        System.out.println("Date: " + date.toString());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z");
+        System.out.println("Date: " + dateFormat.format(date));
+        // System.out.println("Date: " + date.toString());
         System.out.println(message);
         System.out.println();
     }
