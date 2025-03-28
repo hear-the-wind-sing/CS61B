@@ -242,14 +242,19 @@ public class Repository {
             String fileName = args[3];
 
             /** 有无要求的commit*/
-            File commitFile = getObjectFile(args[1]);
-            if (!commitFile.exists()) {
+            String commitSha1 = resolve(args[1]);
+            if(commitSha1 == null) {
                 message("No commit with that id exists.");
                 System.exit(0);
             }
+            File commitFile = getObjectFile(args[1]);
+            //if (!commitFile.exists()) {
+                //message("No commit with that id exists.");
+                //System.exit(0);
+            //}
 
             /** 取出所需commit, 以及它的map*/
-            Commit commit = getCommit(args[1]);
+            Commit commit = getCommit(commitSha1);
             HashMap<String, String> blobSha1 = commit.getBlobSha1();
 
             /** 查看有无要求文件*/
@@ -453,7 +458,8 @@ public class Repository {
     }
 
     public static void rest(String[] args) {
-        String resetCommitSha1 = args[1];
+        //reset [commit id]  先找到完整sha1  写烂了，只能这样减少改动了
+        String resetCommitSha1 = resolve(args[1]);
 
         //尝试复用checkout代码
         /** 取出map*/
@@ -856,4 +862,34 @@ public class Repository {
         return join(HEADS, branchName);
     }
 
+    public static String resolve(String shortHash) {
+        // 校验基本格式
+        if (shortHash.length() < 2 || !shortHash.matches("[0-9a-fA-F]+")) {
+            message("Invalid commit id.");
+            System.exit(0);
+        }
+
+        // 统一转为小写
+        String lowerHash = shortHash.toLowerCase();
+        String dirName = lowerHash.substring(0, 2);
+        String filePrefix = lowerHash.length() > 2 ? lowerHash.substring(2) : "";
+
+        // 定位objects子目录
+        File objDir = join(OBJ_DIR, dirName);
+        if (!objDir.exists()) return null;
+
+        String fullHash = null;
+        for (File f : objDir.listFiles()) {
+            String name = dirName + f.getName();
+            if (name.startsWith(lowerHash)) {
+                if (fullHash != null) { // 发现多个匹配
+                    message("Ambiguous commit id.");
+                    System.exit(0);
+                }
+                fullHash = name;
+            }
+        }
+
+        return fullHash;
+    }
 }
