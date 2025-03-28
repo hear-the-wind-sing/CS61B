@@ -105,7 +105,7 @@ public class Repository {
         String workFileSha1 = sha1(fileContent);
         String curFileSha1 = curCommit.find(fileName);
 
-        if (curFileSha1 == null || workFileSha1 != curFileSha1) {
+        if (curFileSha1 == null || !workFileSha1.equals(curFileSha1)) {
             Blob b = new Blob(fileContent);
             saveBlob(b, workFileSha1);
             index = readObject(INDEX, HashMap.class);
@@ -146,7 +146,9 @@ public class Repository {
 
         /** 将最新commit的sha1写入 branch*/
         String newCommitSha1 = sha1(serialize(newCommit));
-        writeContents(HEAD, newCommitSha1);
+        File nowBranch = getNowBranch();
+        writeContents(nowBranch, newCommitSha1);
+
 
         /** 将最新commit写入objects */
         saveCommit(newCommit, newCommitSha1);
@@ -185,7 +187,7 @@ public class Repository {
             String branchName = headContent.substring("ref: refs/heads/".length());
 
             /**是否是当前分支*/
-            if (checkBranch.equals(branchName)) {
+            if (args[1].equals(branchName)) {
                 message("No need to checkout the current branch.");
                 System.exit(0);
             }
@@ -368,7 +370,7 @@ public class Repository {
         }
         Collections.sort(words);
         for(String e: words) {
-            if(e == branchName) {
+            if(e.equals(branchName)) {
                 System.out.println("*"+e);
             } else {
                 System.out.println(e);
@@ -631,7 +633,7 @@ public class Repository {
         writeObject(INDEX,newIndexForCommit);
 
         //自动提交
-        String[] a = {"commit","Merge "+branch.getName()+" into "+nowBranch.getName(),nowBranchCommitSha1};
+        String[] a = {"commit","Merge "+branch.getName()+" into "+nowBranch.getName(),branchCommitSha1};
         Repository.commit(a);
 
     }
@@ -766,7 +768,7 @@ public class Repository {
             Commit secondParent = getCommit(secondParentSha1);
             if (secondParentSha1 != null) {
                 queue.add(secondParent);
-                visited.put(firstParentSha1,visited.get(secondParentSha1) + 1);
+                visited.put(secondParentSha1,visited.get(secondParentSha1) + 1);
             }
         }
     }
