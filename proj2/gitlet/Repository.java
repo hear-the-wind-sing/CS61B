@@ -231,8 +231,8 @@ public class Repository {
                 writeContents(filePath, blob.getContent());
             }
 
-            /** 将当前分支写入HEAD */
-            writeContents(HEAD, "ref: refs/heads/" + branchName);
+            /** 将目标分支写入HEAD */
+            writeContents(HEAD, "ref: refs/heads/" + args[1]);
 
             /** 清空暂存区*/
             HashMap<String, String> index = new HashMap<>();
