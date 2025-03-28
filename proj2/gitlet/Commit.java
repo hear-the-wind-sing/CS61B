@@ -7,6 +7,10 @@ import java.util.Date; // TODO: You'll likely use this in this class
 import java.util.Map;
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
+
+import static gitlet.Utils.serialize;
+import static gitlet.Utils.sha1;
+
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
@@ -47,8 +51,18 @@ public class Commit implements Serializable, Dumpable {
         this.date = new Date();
         this.firstParent = firstParent;
         this.secondParent = null;
-        this.blobSha1 = lastCommit.getBlobSha1();
-        this.blobSha1.putAll(index);
+        this.blobSha1 = new HashMap<>(lastCommit.getBlobSha1());
+        //this.blobSha1 = lastCommit.getBlobSha1();
+        //this.blobSha1.putAll(index);
+        for(Map.Entry<String,String> entry:index.entrySet()) {
+            String filename = entry.getKey();
+            String blobSha1 = entry.getValue();
+            if(blobSha1 == null && this.blobSha1.containsKey(filename)) {
+                this.blobSha1.remove(filename);
+            } else {
+                this.blobSha1.put(filename, blobSha1);
+            }
+        }
     }
 
     public String getMessage() {
@@ -90,5 +104,12 @@ public class Commit implements Serializable, Dumpable {
         // System.out.println("Date: " + date.toString());
         System.out.println(message);
         System.out.println();
+    }
+
+    public String getCommitSha1() {
+        return sha1(serialize(this));
+    }
+    public void setSecondParent(String sha1) {
+        this.secondParent = sha1;
     }
 }

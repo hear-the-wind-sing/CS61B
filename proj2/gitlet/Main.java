@@ -1,6 +1,7 @@
 package gitlet;
 
 import java.io.File;
+import java.util.ResourceBundle;
 
 import static gitlet.Utils.join;
 
@@ -54,6 +55,38 @@ public class Main {
             case "log":
                 validateNumArgs(args, 1);
                 Repository.log();
+                break;
+            case "rm":
+                validateNumArgs(args, 2);
+                Repository.rm(args);
+                break;
+            case "global-log":
+                validateNumArgs(args, 1);
+                Repository.globalLog();
+                break;
+            case "find":
+                validateNumArgs(args, 2);
+                Repository.find(args);
+                break;
+            case "status":
+                validateNumArgs(args, 1);
+                Repository.status();
+                break;
+            case "branch":
+                validateNumArgs(args, 2);
+                Repository.branch(args);
+                break;
+            case "rm-branch":
+                validateNumArgs(args, 2);
+                Repository.rmBranch(args);
+                break;
+            case "rest":
+                validateNumArgs(args, 2);
+                Repository.rest(args);
+                break;
+            case "merge":
+                validateNumArgs(args, 2);
+                Repository.merge(args);
                 break;
             default:
                 Utils.message("No command with that name exists.");
