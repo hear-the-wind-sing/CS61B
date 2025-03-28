@@ -136,9 +136,10 @@ public class Repository {
         File curCommitPath = getObjectFile(curCommitSha1);
         Commit curCommit = readObject(curCommitPath, Commit.class);
 
-        /** 新建commit,清空暂存区*/
+        /** 新建commit,清空暂存区,(记得写回到INDEX)*/
         Commit newCommit = new Commit(args[1], curCommitSha1, curCommit, index);
         index.clear();
+        writeObject(INDEX, index);
 
         if(args.length == 3) {
             newCommit.setSecondParent(args[2]);
