@@ -85,7 +85,8 @@ public class Main {
                 Repository.rest(args);
                 break;
             case "merge":
-                validateNumArgs(args, 2);
+                validateNumArgs(args, 2
+                );
                 Repository.merge(args);
                 break;
             default:

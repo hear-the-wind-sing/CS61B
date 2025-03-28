@@ -297,6 +297,8 @@ public class Repository {
             index.put(args[1],null);
         }
         restrictedDelete(rmfile);
+
+        writeObject(INDEX,index);
     }
 
     //    public static void save_commit(Commit ){
