@@ -125,7 +125,7 @@ public class Repository {
             System.exit(0);
         }
 
-        if (args.length == 1) {
+        if (args.length == 1 || args[1].equals("")) {
             message("Please enter a commit message.");
             System.exit(0);
         }
@@ -454,10 +454,10 @@ public class Repository {
             System.exit(0);
         }
 
-        restrictedDelete(branch);
+        branch.delete();
     }
 
-    public static void rest(String[] args) {
+    public static void reset(String[] args) {
         //reset [commit id]  先找到完整sha1  写烂了，只能这样减少改动了
         String resetCommitSha1 = resolve(args[1]);
 

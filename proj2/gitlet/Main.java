@@ -80,9 +80,9 @@ public class Main {
                 validateNumArgs(args, 2);
                 Repository.rmBranch(args);
                 break;
-            case "rest":
+            case "reset":
                 validateNumArgs(args, 2);
-                Repository.rest(args);
+                Repository.reset(args);
                 break;
             case "merge":
                 validateNumArgs(args, 2
