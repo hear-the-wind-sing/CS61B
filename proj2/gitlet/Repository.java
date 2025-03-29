@@ -543,7 +543,7 @@ public class Repository {
 
         File nowBranch = getNowBranch();
         if(branch.getName().equals(nowBranch.getName())) {
-            message("A branch with that name does not exist.");
+            message("Cannot merge a branch with itself.");
             System.exit(0);
         }
 
