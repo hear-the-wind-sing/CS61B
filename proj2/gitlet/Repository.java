@@ -300,8 +300,8 @@ public class Repository {
         }
         if(curCommitbBlobSha1.containsKey(args[1])) {
             index.put(args[1],null);
+            restrictedDelete(rmfile);
         }
-        restrictedDelete(rmfile);
 
         writeObject(INDEX,index);
     }
@@ -460,6 +460,11 @@ public class Repository {
     public static void reset(String[] args) {
         //reset [commit id]  先找到完整sha1  写烂了，只能这样减少改动了
         String resetCommitSha1 = resolve(args[1]);
+
+        if(resetCommitSha1 == null) {
+            message("No commit with that id exists.");
+            System.exit(0);
+        }
 
         //尝试复用checkout代码
         /** 取出map*/
