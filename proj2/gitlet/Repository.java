@@ -101,16 +101,30 @@ public class Repository {
         File curCommitPath = getObjectFile(curCommitSha1);
         Commit curCommit = readObject(curCommitPath, Commit.class);
 
+        // 欲暂存文件的sha1
         byte[] fileContent = readContents(filePath);
         String workFileSha1 = sha1(fileContent);
-        String curFileSha1 = curCommit.find(fileName);
 
-        if (curFileSha1 == null || !workFileSha1.equals(curFileSha1)) {
+        //当前commit的跟踪
+        HashMap<String, String> curCommitBlobSha1 = curCommit.getBlobSha1();
+        String curFileSha1 = curCommitBlobSha1.get(fileName);
+
+        if (!curCommitBlobSha1.containsKey(fileName) || !workFileSha1.equals(curFileSha1)) {
             Blob b = new Blob(fileContent);
             saveBlob(b, workFileSha1);
             index = readObject(INDEX, HashMap.class);
             index.put(fileName, workFileSha1);
             writeObject(INDEX, index);
+        }
+        if(curCommitBlobSha1.containsKey(fileName)) {
+            index = readObject(INDEX, HashMap.class);
+            if(curFileSha1.equals(workFileSha1)) {
+                if (index.containsKey(fileName)) {
+                    index.remove(fileName);
+                    writeObject(INDEX, index);
+                }
+                return;
+            }
         }
     }
 
