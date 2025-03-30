@@ -798,7 +798,9 @@ public class Repository {
 
     private static void addParentsToQueue(Commit commit, Queue<Commit> queue,HashMap<String, Integer> visited)  {
         String currentSha1 = commit.getCommitSha1();
+        System.out.print(currentSha1);
         Integer currentDepth = visited.get(currentSha1);
+        System.out.println(" "+currentDepth.toString());
 
         String firstParentSha1 = commit.getFirstParent();
         String secondParentSha1 = commit.getSecondParent();
