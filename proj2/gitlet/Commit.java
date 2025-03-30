@@ -106,8 +106,15 @@ public class Commit implements Serializable, Dumpable {
         System.out.println();
     }
 
+//    public String getCommitSha1() {
+//        return sha1(serialize(this));
+//    }
     public String getCommitSha1() {
-        return sha1(serialize(this));
+        StringBuilder tmp = new StringBuilder();
+        for (String name : blobSha1.keySet()) {
+            tmp.append(blobSha1.get(name));
+        }
+        return Utils.sha1(message, date.toString(), firstParent, secondParent, tmp.toString());
     }
     public void setSecondParent(String sha1) {
         this.secondParent = sha1;

@@ -73,7 +73,8 @@ public class Repository {
         }
 
         Commit initCommit = new Commit("initial commit", null);
-        String commitSha1 = sha1(serialize(initCommit));
+        //String commitSha1 = sha1(serialize(initCommit));
+        String commitSha1 = initCommit.getCommitSha1();
         File commitFile = getObjectFile(commitSha1);
         writeObject(commitFile, initCommit);
 
@@ -160,7 +161,8 @@ public class Repository {
         }
 
         /** 将最新commit的sha1写入 branch*/
-        String newCommitSha1 = sha1(serialize(newCommit));
+        //String newCommitSha1 = sha1(serialize(newCommit));
+        String newCommitSha1 = newCommit.getCommitSha1();
         File nowBranch = getNowBranch();
         writeContents(nowBranch, newCommitSha1);
 
@@ -563,13 +565,13 @@ public class Repository {
         HashMap<String, Integer> visitedB = new HashMap<>();
 
         queueA.add(branchCommit);
-        visitedA.put(branchCommitSha1, 0);
+        visitedA.put(branchCommitSha1, 1);
         queueB.add(nowBranchCommit);
-        visitedB.put(nowBranchCommitSha1, 0);
+        visitedB.put(nowBranchCommitSha1, 1);
 
         boolean findLca = false;
 
-        while (!findLca && !queueA.isEmpty() && !queueB.isEmpty()) {
+        while (!findLca && (!queueA.isEmpty() || !queueB.isEmpty())) {
             // 检查队列A的当前层
             int sizeA = queueA.size();
             for (int i = 0; i < sizeA; i++) {
@@ -790,7 +792,7 @@ public class Repository {
 
     private static void addParentsToQueue(Commit commit, Queue<Commit> queue,HashMap<String, Integer> visited)  {
         String currentSha1 = commit.getCommitSha1();
-        int currentDepth = visited.get(currentSha1);
+        Integer currentDepth = visited.get(currentSha1);
 
         String firstParentSha1 = commit.getFirstParent();
         String secondParentSha1 = commit.getSecondParent();
