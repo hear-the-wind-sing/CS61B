@@ -565,9 +565,9 @@ public class Repository {
         HashMap<String, Integer> visitedB = new HashMap<>();
 
         queueA.add(branchCommit);
-        visitedA.put(branchCommitSha1, 1);
+        visitedA.put(branchCommitSha1, 0);
         queueB.add(nowBranchCommit);
-        visitedB.put(nowBranchCommitSha1, 1);
+        visitedB.put(nowBranchCommitSha1, 0);
 
         boolean findLca = false;
 
@@ -576,7 +576,6 @@ public class Repository {
             int sizeA = queueA.size();
             for (int i = 0; i < sizeA; i++) {
                 Commit current = queueA.poll();
-                if (current == null) break;
                 if (visitedB.containsKey(current.getCommitSha1())) {
                     splitCommit = current;
                     splitCommitSha1 = current.getCommitSha1();
@@ -590,7 +589,6 @@ public class Repository {
             int sizeB = queueB.size();
             for (int i = 0; i < sizeB; i++) {
                 Commit current = queueB.poll();
-                if (current == null) break;
                 if (visitedA.containsKey(current.getCommitSha1())) {
                     splitCommit = current;
                     splitCommitSha1 = current.getCommitSha1();
@@ -675,6 +673,9 @@ public class Repository {
     }
 
     public static HashMap<String, String> getNewIndexForCommit(Commit head, Commit other, Commit split) {
+
+        boolean conflict = false;
+
         HashMap<String, String> newIndex = new HashMap<>();
         HashMap<String, String> splitBlobs = split.getBlobSha1();
         HashMap<String, String> headBlobs = head.getBlobSha1();
@@ -721,6 +722,7 @@ public class Repository {
                 if (inHead && inOther) {
                     if (!Objects.equals(headBlob, otherBlob)) {
                         handleConflict(file, headBlob, otherBlob, newIndex);
+                        conflict = true;
                     } else {
                         newIndex.put(file, headBlob); // 内容相同任选其一
                     }
@@ -739,6 +741,10 @@ public class Repository {
 
         // 处理特殊删除规则
         processSpecialRemovals(splitBlobs, headBlobs, otherBlobs, newIndex);
+
+        if(conflict) {
+            message("Encountered a merge conflict.");
+        }
 
         return newIndex;
     }
@@ -798,17 +804,13 @@ public class Repository {
         String secondParentSha1 = commit.getSecondParent();
         if(firstParentSha1 != null && !visited.containsKey(firstParentSha1)) {
             Commit firstParent = getCommit(firstParentSha1);
-            if (firstParent != null) {
-                queue.add(firstParent);
-                visited.put(firstParentSha1,currentDepth + 1);
-            }
+            queue.add(firstParent);
+            visited.put(firstParentSha1,currentDepth + 1);
         }
         if(secondParentSha1 != null && !visited.containsKey(secondParentSha1)) {
             Commit secondParent = getCommit(secondParentSha1);
-            if (secondParent != null) {
-                queue.add(secondParent);
-                visited.put(secondParentSha1,currentDepth + 1);
-            }
+            queue.add(secondParent);
+            visited.put(secondParentSha1,currentDepth + 1);
         }
     }
     /**
