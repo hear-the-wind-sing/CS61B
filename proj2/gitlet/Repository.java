@@ -683,7 +683,7 @@ public class Repository {
         writeObject(INDEX,newIndexForCommit);
 
         //自动提交
-        String[] a = {"commit","Merge "+branch.getName()+" into "+nowBranch.getName(),branchCommitSha1};
+        String[] a = {"commit","Merge "+branch.getName()+" into "+nowBranch.getName()+".",branchCommitSha1};
         Repository.commit(a);
 
     }
