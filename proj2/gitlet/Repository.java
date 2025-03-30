@@ -569,7 +569,7 @@ public class Repository {
 
         boolean findLca = false;
 
-        while (!findLca && (!queueA.isEmpty() || !queueB.isEmpty())) {
+        while (!findLca && !queueA.isEmpty() && !queueB.isEmpty()) {
             // 检查队列A的当前层
             int sizeA = queueA.size();
             for (int i = 0; i < sizeA; i++) {
@@ -578,6 +578,7 @@ public class Repository {
                     splitCommit = current;
                     splitCommitSha1 = current.getCommitSha1();
                     findLca = true;
+                    break;
                 }
                 addParentsToQueue(current, queueA, visitedA);
             }
@@ -590,6 +591,7 @@ public class Repository {
                     splitCommit = current;
                     splitCommitSha1 = current.getCommitSha1();
                     findLca = true;
+                    break;
                 }
                 addParentsToQueue(current, queueB, visitedB);
             }
@@ -799,7 +801,7 @@ public class Repository {
         }
         if(secondParentSha1 != null && !visited.containsKey(secondParentSha1)) {
             Commit secondParent = getCommit(secondParentSha1);
-            if (secondParentSha1 != null) {
+            if (secondParent != null) {
                 queue.add(secondParent);
                 visited.put(secondParentSha1,currentDepth + 1);
             }
