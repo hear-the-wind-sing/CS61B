@@ -706,55 +706,36 @@ public class Repository {
             String splitSha1 = splitBlobs.get(fileName);
             String headSha1 = currentBlobs.get(fileName);
             String otherSha1 = otherBlobs.get(fileName);
+            if(splitSha1 != null && headSha1 != null && otherSha1 != null) {
+                if(splitSha1.equals(headSha1) && splitSha1 != otherSha1) {
+                    index.put(fileName,otherSha1);
+                }
+                if(!splitSha1.equals(headSha1)&&!splitSha1.equals(otherSha1)&&!headSha1.equals(otherSha1)){
 
-            // 文件在分叉点存在且当前分支未修改，但在给定分支中存在并修改过
-            if (splitSha1 != null && headSha1 == null && otherSha1 != null && !otherSha1.equals(splitSha1)) {
-                // 检出给定分支中的版本，并暂存
-                newIndex.put(fileName, otherSha1);
+                }
             }
-            // 文件在当前分支修改过，但在给定分支未修改
-            else if (splitSha1 != null && headSha1 != null && otherSha1 == null) {
-                // 当前分支保留修改
-                newIndex.put(fileName, headSha1);
+            if(splitSha1 != null) {
+                if(splitSha1.equals(headSha1)&&otherSha1 == null) {
+                    newIndex.put(fileName,null);
+                }
+                if(headSha1 != null && otherSha1 == null && !splitSha1.equals(headSha1)) {
+                    conflictDetected = true;
+                    handleConflict(fileName, headSha1, otherSha1, newIndex);
+                }
+                if(otherSha1 != null && headSha1 == null && !splitSha1.equals(otherSha1)) {
+                    conflictDetected = true;
+                    handleConflict(fileName, headSha1, otherSha1, newIndex);
+                }
             }
-            // 文件在当前分支和给定分支相同（即两者都修改过，但内容相同或者都删除）
-            else if (splitSha1 != null && headSha1 != null && otherSha1 != null &&
-                    headSha1.equals(otherSha1)) {
-                // 两分支没有冲突，保留当前分支的版本
-                newIndex.put(fileName, headSha1);
-            }
-            // 文件在当前分支删除，给定分支保留，或者反之
-            else if (splitSha1 != null && headSha1 == null && otherSha1 != null) {
-                // 给定分支的版本被检出并暂存
-                newIndex.put(fileName, otherSha1);
-            }
-            // 文件在当前分支和给定分支都修改过且内容不同（冲突）
-            else if (splitSha1 != null && headSha1 != null && otherSha1 != null &&
-                    !headSha1.equals(otherSha1)) {
-                // 发生冲突，加入标记内容
-                String conflictContent = "<<<<<<< HEAD\n" +
-                        currentHead.getBlobContent(fileName) + "\n" +
-                        "=======\n" +
-                        otherHead.getBlobContent(fileName) + "\n" +
-                        ">>>>>>>";
-                // 将冲突文件的内容作为新版本，并将其暂存
-                newIndex.put(fileName, conflictContent);
-                conflictDetected = true;
-            }
-            // 文件在分叉点存在，但在当前分支未修改且给定分支不存在
-            else if (splitSha1 != null && headSha1 == null && otherSha1 == null) {
-                // 当前分支删除该文件，标记为删除
-                newIndex.put(fileName, null);
-            }
-            // 文件仅存在于当前分支，不在分叉点
-            else if (splitSha1 == null && headSha1 != null && otherSha1 == null) {
-                // 当前分支的文件新增，保留当前版本
-                newIndex.put(fileName, headSha1);
-            }
-            // 文件仅存在于给定分支，不在分叉点
-            else if (splitSha1 == null && headSha1 == null && otherSha1 != null) {
-                // 给定分支的文件新增，检出并暂存
-                newIndex.put(fileName, otherSha1);
+            if(splitSha1 == null) {
+                if(otherSha1 != null) {
+                    if(headSha1 != null && headSha1.equals(otherSha1)) {
+                        //冲突
+                        conflictDetected = true;
+                        handleConflict(fileName, headSha1, otherSha1, newIndex);
+                    }
+                    newIndex.put(fileName,otherSha1);
+                }
             }
         }
 
@@ -766,7 +747,36 @@ public class Repository {
         return newIndex;
     }
 
+    private static void handleConflict(String fileName, String currentSha1, String otherSha1,
+                                       HashMap<String, String> newIndex) {
+        String currentContent = "";
+        if (currentSha1 != null) {
+            Blob currentBlob = getBlob(currentSha1);
+            currentContent = new String(currentBlob.getContent());
+        }
 
+        String otherContent = "";
+        if (otherSha1 != null) {
+            Blob otherBlob = getBlob(otherSha1);
+            otherContent = new String(otherBlob.getContent());
+        }
+
+        // 生成冲突内容
+        String conflictContent = String.join("\n",
+                "<<<<<<< HEAD",
+                currentContent,
+                "=======",
+                otherContent,
+                ">>>>>>>"
+            );
+
+        // 创建冲突blob
+        Blob conflictBlob = new Blob(conflictContent.getBytes());
+        String conflictSha1 = sha1(conflictContent.getBytes());
+        saveBlob(conflictBlob,conflictSha1); // 确保有保存blob的方法
+
+        newIndex.put(fileName, conflictSha1);
+    }
     private static void addParentsToQueue(String commitSha1, Queue<String> queue,HashMap<String, Integer> visited)  {
         Commit commit = getCommit(commitSha1);
         Integer currentDepth = visited.get(commitSha1);
