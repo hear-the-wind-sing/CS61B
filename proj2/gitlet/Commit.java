@@ -1,15 +1,14 @@
 package gitlet;
 
 // TODO: any imports you need here
-
+import java.io.File;
 import java.io.Serializable;
 import java.util.Date; // TODO: You'll likely use this in this class
 import java.util.Map;
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
 
-import static gitlet.Utils.serialize;
-import static gitlet.Utils.sha1;
+import static gitlet.Utils.*;
 
 /** Represents a gitlet commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
@@ -121,5 +120,11 @@ public class Commit implements Serializable, Dumpable {
     }
     public void setSecondParent(String sha1) {
         this.secondParent = sha1;
+    }
+    public String getBlobContent(String fileName) {
+        String sha1 = this.blobSha1.get(fileName);
+        File blobPath = Repository.getObjectFile(sha1);
+        Blob b = readObject(blobPath, Blob.class);
+        return new String(b.getContent());
     }
 }

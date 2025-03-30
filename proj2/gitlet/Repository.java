@@ -626,36 +626,36 @@ public class Repository {
             }
         }
         */
-//        HashMap<String, String> curBlobSha1 = nowBranchCommit.getBlobSha1();
-//        for(String filename : newIndexForCommit.keySet()) {
-//            if(!curBlobSha1.containsKey(filename)) {
-//                File file = join(CWD, filename);
-//                if(file.exists()) {
-//                    byte[] fileContent = readContents(file);
-//                    String fileSha1 = sha1(fileContent);
-//                    if(!fileSha1.equals(newIndexForCommit.get(filename))) {
-//                        message("There is an untracked file in the way; delete it, or add and commit it first.");
-//                        System.exit(0);
-//                    }
-//                }
-//            }
-//        }
         HashMap<String, String> curBlobSha1 = nowBranchCommit.getBlobSha1();
-        HashMap<String, String> splitBlobs = splitCommit.getBlobSha1();
-        for (String filename : newIndexForCommit.keySet()) {
-            if (!curBlobSha1.containsKey(filename)) {
+        for(String filename : newIndexForCommit.keySet()) {
+            if(!curBlobSha1.containsKey(filename)) {
                 File file = join(CWD, filename);
-                // 允许覆盖 split 点存在的文件
-                if (file.exists() && !splitBlobs.containsKey(filename)) {
+                if(file.exists()) {
                     byte[] fileContent = readContents(file);
                     String fileSha1 = sha1(fileContent);
-                    if (!fileSha1.equals(newIndexForCommit.get(filename))) {
+                    if(!fileSha1.equals(newIndexForCommit.get(filename))) {
                         message("There is an untracked file in the way; delete it, or add and commit it first.");
                         System.exit(0);
                     }
                 }
             }
         }
+//        HashMap<String, String> curBlobSha1 = nowBranchCommit.getBlobSha1();
+//        HashMap<String, String> splitBlobs = splitCommit.getBlobSha1();
+//        for (String filename : newIndexForCommit.keySet()) {
+//            if (!curBlobSha1.containsKey(filename)) {
+//                File file = join(CWD, filename);
+//                // 允许覆盖 split 点存在的文件
+//                if (file.exists() && !splitBlobs.containsKey(filename)) {
+//                    byte[] fileContent = readContents(file);
+//                    String fileSha1 = sha1(fileContent);
+//                    if (!fileSha1.equals(newIndexForCommit.get(filename))) {
+//                        message("There is an untracked file in the way; delete it, or add and commit it first.");
+//                        System.exit(0);
+//                    }
+//                }
+//            }
+//        }
 
         /**检出文件
          参考代码：
@@ -692,6 +692,7 @@ public class Repository {
         boolean conflictDetected = false;
         HashMap<String, String> newIndex = new HashMap<>();
 
+        // 获取各个提交中的文件与其对应的SHA-1值（blobs）
         HashMap<String, String> splitBlobs = splitCommit.getBlobSha1();
         HashMap<String, String> currentBlobs = currentHead.getBlobSha1();
         HashMap<String, String> otherBlobs = otherHead.getBlobSha1();
@@ -701,110 +702,68 @@ public class Repository {
         allFiles.addAll(currentBlobs.keySet());
         allFiles.addAll(otherBlobs.keySet());
 
-        for (String file : allFiles) {
-            String splitBlob = splitBlobs.get(file);
-            String currentBlob = currentBlobs.get(file);
-            String otherBlob = otherBlobs.get(file);
+        for (String fileName : allFiles) {
+            String splitSha1 = splitBlobs.get(fileName);
+            String headSha1 = currentBlobs.get(fileName);
+            String otherSha1 = otherBlobs.get(fileName);
 
-            // Case 1: 文件在split点存在
-            if (splitBlob != null) {
-                // 处理双方都删除的情况
-                if (currentBlob == null && otherBlob == null) {
-                    newIndex.remove(file);
-                    continue;
-                }
-
-                boolean currentModified = !splitBlob.equals(currentBlob);
-                boolean otherModified = !splitBlob.equals(otherBlob);
-
-                if (currentModified && otherModified) {
-                    if (!Objects.equals(currentBlob, otherBlob)) {
-                        handleConflict(file, currentBlob, otherBlob, newIndex);
-                        conflictDetected = true;
-                    } else {
-                        newIndex.put(file, currentBlob);
-                    }
-                } else if (otherModified) {
-                    newIndex.put(file, otherBlob);
-                } else {
-                    newIndex.put(file, currentBlob);
-                }
+            // 文件在分叉点存在且当前分支未修改，但在给定分支中存在并修改过
+            if (splitSha1 != null && headSha1 == null && otherSha1 != null && !otherSha1.equals(splitSha1)) {
+                // 检出给定分支中的版本，并暂存
+                newIndex.put(fileName, otherSha1);
             }
-            // Case 2: 文件在split点不存在
-            else {
-                boolean inCurrent = currentBlobs.containsKey(file);
-                boolean inOther = otherBlobs.containsKey(file);
-
-                if (inCurrent && inOther) {
-                    if (!Objects.equals(currentBlob, otherBlob)) {
-                        handleConflict(file, currentBlob, otherBlob, newIndex);
-                        conflictDetected = true;
-                    } else {
-                        newIndex.put(file, currentBlob);
-                    }
-                } else if (inOther) {
-                    newIndex.put(file, otherBlob);
-                } else {
-                    newIndex.put(file, currentBlob);
-                }
+            // 文件在当前分支修改过，但在给定分支未修改
+            else if (splitSha1 != null && headSha1 != null && otherSha1 == null) {
+                // 当前分支保留修改
+                newIndex.put(fileName, headSha1);
             }
-
-            if (conflictDetected) {
-                System.out.println("Encountered a merge conflict.");
+            // 文件在当前分支和给定分支相同（即两者都修改过，但内容相同或者都删除）
+            else if (splitSha1 != null && headSha1 != null && otherSha1 != null &&
+                    headSha1.equals(otherSha1)) {
+                // 两分支没有冲突，保留当前分支的版本
+                newIndex.put(fileName, headSha1);
+            }
+            // 文件在当前分支删除，给定分支保留，或者反之
+            else if (splitSha1 != null && headSha1 == null && otherSha1 != null) {
+                // 给定分支的版本被检出并暂存
+                newIndex.put(fileName, otherSha1);
+            }
+            // 文件在当前分支和给定分支都修改过且内容不同（冲突）
+            else if (splitSha1 != null && headSha1 != null && otherSha1 != null &&
+                    !headSha1.equals(otherSha1)) {
+                // 发生冲突，加入标记内容
+                String conflictContent = "<<<<<<< HEAD\n" +
+                        currentHead.getBlobContent(fileName) + "\n" +
+                        "=======\n" +
+                        otherHead.getBlobContent(fileName) + "\n" +
+                        ">>>>>>>";
+                // 将冲突文件的内容作为新版本，并将其暂存
+                newIndex.put(fileName, conflictContent);
+                conflictDetected = true;
+            }
+            // 文件在分叉点存在，但在当前分支未修改且给定分支不存在
+            else if (splitSha1 != null && headSha1 == null && otherSha1 == null) {
+                // 当前分支删除该文件，标记为删除
+                newIndex.put(fileName, null);
+            }
+            // 文件仅存在于当前分支，不在分叉点
+            else if (splitSha1 == null && headSha1 != null && otherSha1 == null) {
+                // 当前分支的文件新增，保留当前版本
+                newIndex.put(fileName, headSha1);
+            }
+            // 文件仅存在于给定分支，不在分叉点
+            else if (splitSha1 == null && headSha1 == null && otherSha1 != null) {
+                // 给定分支的文件新增，检出并暂存
+                newIndex.put(fileName, otherSha1);
             }
         }
 
-        processSpecialRemovals(splitBlobs, currentBlobs, otherBlobs, newIndex);
+        // 如果发生了冲突，打印冲突信息
+        if (conflictDetected) {
+            System.out.println("Encountered a merge conflict.");
+        }
+
         return newIndex;
-    }
-
-    private static void handleConflict(String filename, String currentBlobSha, String otherBlobSha,
-                                       Map<String, String> newIndex) {
-        try {
-            // 安全处理 null 值
-            byte[] currentContent = (currentBlobSha != null) ?
-                    getBlob(currentBlobSha).getContent() : new byte[0];
-            byte[] otherContent = (otherBlobSha != null) ?
-                    getBlob(otherBlobSha).getContent() : new byte[0];
-
-            String conflictContent = String.join("\n",
-                    "<<<<<<< HEAD",
-                    new String(currentContent, StandardCharsets.UTF_8),
-                    "=======",
-                    new String(otherContent, StandardCharsets.UTF_8),
-                    ">>>>>>>"
-            );
-
-            // 正确保存冲突内容
-            Blob conflictBlob = new Blob(conflictContent.getBytes(StandardCharsets.UTF_8));
-            String conflictSha = sha1(conflictContent.getBytes());
-            saveBlob(conflictBlob, conflictSha);  // 确保使用正确的保存方法
-
-            newIndex.put(filename, conflictSha);
-        } catch (Exception e) {
-            throw new GitletException("Failed to resolve conflict for file: " + filename);
-        }
-    }
-
-    private static void processSpecialRemovals(Map<String, String> splitBlobs,
-                                               Map<String, String> currentBlobs,
-                                               Map<String, String> otherBlobs,
-                                               Map<String, String> newIndex) {
-        // 处理 split 点存在且对方删除的情况
-        for (String file : splitBlobs.keySet()) {
-            String splitBlob = splitBlobs.get(file);
-            String currentBlob = currentBlobs.get(file);
-            String otherBlob = otherBlobs.get(file);
-
-            // Case 1: split点存在，当前未修改，对方删除
-            if (splitBlob.equals(currentBlob) && otherBlob == null) {
-                newIndex.remove(file);
-            }
-            // Case 2: split点存在，对方未修改，当前删除
-            if (splitBlob.equals(otherBlob) && currentBlob == null) {
-                newIndex.remove(file);
-            }
-        }
     }
 
 
