@@ -558,49 +558,44 @@ public class Repository {
         Commit nowBranchCommit = getCommit(nowBranchCommitSha1);
 
         //得到split point
-        Queue<Commit> queueA = new LinkedList<>();
-        Queue<Commit> queueB = new LinkedList<>();
+        Queue<String> queueA = new LinkedList<>();
+        Queue<String> queueB = new LinkedList<>();
 
         HashMap<String, Integer> visitedA = new HashMap<>(); // SHA-1 → depth
         HashMap<String, Integer> visitedB = new HashMap<>();
 
-        queueA.add(branchCommit);
+        queueA.add(branchCommitSha1);
         visitedA.put(branchCommitSha1, 0);
-        queueB.add(nowBranchCommit);
+        queueB.add(nowBranchCommitSha1);
         visitedB.put(nowBranchCommitSha1, 0);
 
         boolean findLca = false;
-
-        System.out.println(branchCommit.getCommitSha1());
-        System.out.println(branchCommitSha1);
-        System.out.println(visitedA.get(branchCommitSha1).toString());
 
         while (!findLca && (!queueA.isEmpty() || !queueB.isEmpty())) {
             // 检查队列A的当前层
             int sizeA = queueA.size();
             for (int i = 0; i < sizeA; i++) {
-                Commit current = queueA.poll();
-                System.out.println(current.getCommitSha1());
-                if (visitedB.containsKey(current.getCommitSha1())) {
-                    splitCommit = current;
-                    splitCommitSha1 = current.getCommitSha1();
+                String currentSha1 = queueA.poll();
+                if (visitedB.containsKey(currentSha1)) {
+                    splitCommit = getCommit(currentSha1);
+                    splitCommitSha1 = currentSha1;
                     findLca = true;
                     break;
                 }
-                addParentsToQueue(current, queueA, visitedA);
+                addParentsToQueue(currentSha1, queueA, visitedA);
             }
             if(findLca) break;
             // 检查队列B的当前层
             int sizeB = queueB.size();
             for (int i = 0; i < sizeB; i++) {
-                Commit current = queueB.poll();
-                if (visitedA.containsKey(current.getCommitSha1())) {
-                    splitCommit = current;
-                    splitCommitSha1 = current.getCommitSha1();
+                String currentSha1 = queueB.poll();
+                if (visitedA.containsKey(currentSha1)) {
+                    splitCommit = getCommit(currentSha1);
+                    splitCommitSha1 = currentSha1;
                     findLca = true;
                     break;
                 }
-                addParentsToQueue(current, queueB, visitedB);
+                addParentsToQueue(currentSha1, queueB, visitedB);
             }
         }
 
@@ -801,23 +796,22 @@ public class Repository {
     }
 
 
-    private static void addParentsToQueue(Commit commit, Queue<Commit> queue,HashMap<String, Integer> visited)  {
-        String currentSha1 = commit.getCommitSha1();
-        System.out.println(currentSha1);
-        Integer currentDepth = visited.get(currentSha1);
-        System.out.println(currentDepth.toString());
+    private static void addParentsToQueue(String commitSha1, Queue<String> queue,HashMap<String, Integer> visited)  {
+        Commit commit = getCommit(commitSha1);
+        Integer currentDepth = visited.get(commitSha1);
+        //System.out.println(currentDepth.toString());
 
         String firstParentSha1 = commit.getFirstParent();
         String secondParentSha1 = commit.getSecondParent();
         if(firstParentSha1 != null && !visited.containsKey(firstParentSha1)) {
             Commit firstParent = getCommit(firstParentSha1);
             visited.put(firstParentSha1,currentDepth + 1);
-            queue.add(firstParent);
+            queue.add(firstParentSha1);
         }
         if(secondParentSha1 != null && !visited.containsKey(secondParentSha1)) {
             Commit secondParent = getCommit(secondParentSha1);
             visited.put(secondParentSha1,currentDepth + 1);
-            queue.add(secondParent);
+            queue.add(secondParentSha1);
         }
     }
     /**
