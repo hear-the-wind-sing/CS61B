@@ -611,7 +611,7 @@ public class Repository {
         }
 
         //三方文件差异比较,签出 暂存
-        HashMap<String, String> newIndexForCommit = getNewIndexForCommit(branchCommit,nowBranchCommit,splitCommit);
+        HashMap<String, String> newIndexForCommit = getNewIndexForCommit(nowBranchCommit,branchCommit,splitCommit);
 
         /** If an untracked file in the current commit would be overwritten or deleted by the merge,
          print There is an untracked file in the way; delete it, or add and commit it first. and exit;
