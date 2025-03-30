@@ -574,6 +574,7 @@ public class Repository {
             int sizeA = queueA.size();
             for (int i = 0; i < sizeA; i++) {
                 Commit current = queueA.poll();
+                if (current == null) break;
                 if (visitedB.containsKey(current.getCommitSha1())) {
                     splitCommit = current;
                     splitCommitSha1 = current.getCommitSha1();
@@ -587,6 +588,7 @@ public class Repository {
             int sizeB = queueB.size();
             for (int i = 0; i < sizeB; i++) {
                 Commit current = queueB.poll();
+                if (current == null) break;
                 if (visitedA.containsKey(current.getCommitSha1())) {
                     splitCommit = current;
                     splitCommitSha1 = current.getCommitSha1();
