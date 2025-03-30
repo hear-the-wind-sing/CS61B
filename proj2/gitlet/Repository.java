@@ -605,7 +605,9 @@ public class Repository {
             System.exit(0);
         }
         if(splitCommitSha1.equals(nowBranchCommitSha1)) {
-            writeContents(nowBranch, branchCommitSha1);
+            //writeContents(nowBranch, branchCommitSha1);
+            String[] a = {"checkout",args[1]};
+            checkout(a);
             message("Current branch fast-forwarded.");
             System.exit(0);
         }
@@ -683,7 +685,7 @@ public class Repository {
         writeObject(INDEX,newIndexForCommit);
 
         //自动提交
-        String[] a = {"commit","Merge "+branch.getName()+" into "+nowBranch.getName()+".",branchCommitSha1};
+        String[] a = {"commit","Merged "+branch.getName()+" into "+nowBranch.getName()+".",branchCommitSha1};
         Repository.commit(a);
 
     }
