@@ -571,6 +571,9 @@ public class Repository {
 
         boolean findLca = false;
 
+        System.out.println(branchCommitSha1);
+        System.out.println(visitedA.get(branchCommitSha1).toString());
+
         while (!findLca && (!queueA.isEmpty() || !queueB.isEmpty())) {
             // 检查队列A的当前层
             int sizeA = queueA.size();
@@ -798,9 +801,9 @@ public class Repository {
 
     private static void addParentsToQueue(Commit commit, Queue<Commit> queue,HashMap<String, Integer> visited)  {
         String currentSha1 = commit.getCommitSha1();
-        System.out.print(currentSha1);
+        System.out.println(currentSha1);
         Integer currentDepth = visited.get(currentSha1);
-        System.out.println(" "+currentDepth.toString());
+        System.out.println(currentDepth.toString());
 
         String firstParentSha1 = commit.getFirstParent();
         String secondParentSha1 = commit.getSecondParent();
