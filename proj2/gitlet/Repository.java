@@ -804,13 +804,13 @@ public class Repository {
         String secondParentSha1 = commit.getSecondParent();
         if(firstParentSha1 != null && !visited.containsKey(firstParentSha1)) {
             Commit firstParent = getCommit(firstParentSha1);
-            queue.add(firstParent);
             visited.put(firstParentSha1,currentDepth + 1);
+            queue.add(firstParent);
         }
         if(secondParentSha1 != null && !visited.containsKey(secondParentSha1)) {
             Commit secondParent = getCommit(secondParentSha1);
-            queue.add(secondParent);
             visited.put(secondParentSha1,currentDepth + 1);
+            queue.add(secondParent);
         }
     }
     /**
