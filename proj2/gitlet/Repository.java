@@ -569,7 +569,7 @@ public class Repository {
 
         boolean findLca = false;
 
-        while (!findLca && !queueA.isEmpty() && !queueB.isEmpty()) {
+        while (!findLca && (!queueA.isEmpty() || !queueB.isEmpty())) {
             // 检查队列A的当前层
             int sizeA = queueA.size();
             for (int i = 0; i < sizeA; i++) {
@@ -602,6 +602,8 @@ public class Repository {
         }
         if(splitCommitSha1.equals(nowBranchCommitSha1)) {
             writeContents(nowBranch, branchCommitSha1);
+            message("Current branch fast-forwarded.");
+            System.exit(0);
         }
 
         //三方文件差异比较,签出 暂存
@@ -783,20 +785,23 @@ public class Repository {
 
 
     private static void addParentsToQueue(Commit commit, Queue<Commit> queue,HashMap<String, Integer> visited)  {
+        String currentSha1 = commit.getCommitSha1();
+        int currentDepth = visited.get(currentSha1);
+
         String firstParentSha1 = commit.getFirstParent();
         String secondParentSha1 = commit.getSecondParent();
         if(firstParentSha1 != null && !visited.containsKey(firstParentSha1)) {
             Commit firstParent = getCommit(firstParentSha1);
             if (firstParent != null) {
                 queue.add(firstParent);
-                visited.put(firstParentSha1,visited.get(firstParentSha1) + 1);
+                visited.put(firstParentSha1,currentDepth + 1);
             }
         }
         if(secondParentSha1 != null && !visited.containsKey(secondParentSha1)) {
             Commit secondParent = getCommit(secondParentSha1);
             if (secondParentSha1 != null) {
                 queue.add(secondParent);
-                visited.put(secondParentSha1,visited.get(secondParentSha1) + 1);
+                visited.put(secondParentSha1,currentDepth + 1);
             }
         }
     }
