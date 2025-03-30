@@ -713,7 +713,8 @@ public class Repository {
                     index.put(fileName,otherSha1);
                 }
                 if(!splitSha1.equals(headSha1)&&!splitSha1.equals(otherSha1)&&!headSha1.equals(otherSha1)){
-
+                    conflictDetected = true;
+                    handleConflict(fileName, headSha1, otherSha1, newIndex);
                 }
             }
             if(splitSha1 != null) {
