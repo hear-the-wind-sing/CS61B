@@ -571,6 +571,7 @@ public class Repository {
 
         boolean findLca = false;
 
+        System.out.println(branchCommit.getCommitSha1());
         System.out.println(branchCommitSha1);
         System.out.println(visitedA.get(branchCommitSha1).toString());
 
@@ -579,6 +580,7 @@ public class Repository {
             int sizeA = queueA.size();
             for (int i = 0; i < sizeA; i++) {
                 Commit current = queueA.poll();
+                System.out.println(current.getCommitSha1());
                 if (visitedB.containsKey(current.getCommitSha1())) {
                     splitCommit = current;
                     splitCommitSha1 = current.getCommitSha1();
