@@ -709,7 +709,7 @@ public class Repository {
             String headSha1 = currentBlobs.get(fileName);
             String otherSha1 = otherBlobs.get(fileName);
             if(splitSha1 != null && headSha1 != null && otherSha1 != null) {
-                if(splitSha1.equals(headSha1) && splitSha1 != otherSha1) {
+                if(splitSha1.equals(headSha1) && !splitSha1.equals(otherSha1)) {
                     index.put(fileName,otherSha1);
                 }
                 if(!splitSha1.equals(headSha1)&&!splitSha1.equals(otherSha1)&&!headSha1.equals(otherSha1)){
