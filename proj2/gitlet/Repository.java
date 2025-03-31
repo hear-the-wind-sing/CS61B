@@ -773,6 +773,9 @@ public class Repository {
                 ">>>>>>>"
             );
 
+        //调试
+        System.out.println(conflictContent);
+
         // 创建冲突blob
         Blob conflictBlob = new Blob(conflictContent.getBytes());
         String conflictSha1 = sha1(conflictContent.getBytes());
