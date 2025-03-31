@@ -669,7 +669,7 @@ public class Repository {
             Blob blob = getBlob(blobSha1);
             writeContents(filePath, blob.getContent());
         }*/
-        for(Map.Entry<String,String> entry : newIndexForCommit.entrySet()) {
+        for(HashMap.Entry<String,String> entry : newIndexForCommit.entrySet()) {
             String filename = entry.getKey();
             String blobSha1 = entry.getValue();
             File filePath = join(CWD, filename);
@@ -677,6 +677,12 @@ public class Repository {
                 restrictedDelete(filePath);
             } else {
                 Blob blob = getBlob(blobSha1);
+
+                //调试
+                //String a = new String(blob.getContent());
+                //System.out.println(filename);
+                //System.out.println(a);
+
                 writeContents(filePath, blob.getContent());
             }
         }
@@ -710,15 +716,15 @@ public class Repository {
             String otherSha1 = otherBlobs.get(fileName);
             if(splitSha1 != null && headSha1 != null && otherSha1 != null) {
                 if(splitSha1.equals(headSha1) && !splitSha1.equals(otherSha1)) {
-                    index.put(fileName,otherSha1);
+                    newIndex.put(fileName,otherSha1);
                 }
-                if(!splitSha1.equals(headSha1)&&!splitSha1.equals(otherSha1)&&!headSha1.equals(otherSha1)){
+                if(!splitSha1.equals(headSha1) && !splitSha1.equals(otherSha1) && !headSha1.equals(otherSha1)){
                     conflictDetected = true;
                     handleConflict(fileName, headSha1, otherSha1, newIndex);
                 }
             }
             if(splitSha1 != null) {
-                if(splitSha1.equals(headSha1)&&otherSha1 == null) {
+                if(splitSha1.equals(headSha1) && otherSha1 == null) {
                     newIndex.put(fileName,null);
                 }
                 if(headSha1 != null && otherSha1 == null && !splitSha1.equals(headSha1)) {
