@@ -765,16 +765,10 @@ public class Repository {
         }
 
         // 生成冲突内容
-        String conflictContent = String.join("\n",
-                "<<<<<<< HEAD",
-                currentContent,
-                "=======",
-                otherContent,
-                ">>>>>>>"
-            );
+        String conflictContent =  "<<<<<<< HEAD\n" + currentContent + "=======\n" + otherContent + ">>>>>>>\n";
 
         //调试
-        System.out.println(conflictContent);
+        //System.out.println(conflictContent);
 
         // 创建冲突blob
         Blob conflictBlob = new Blob(conflictContent.getBytes());
