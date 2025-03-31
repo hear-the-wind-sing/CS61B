@@ -117,9 +117,9 @@ public class Repository {
             index.put(fileName, workFileSha1);
             writeObject(INDEX, index);
         }
-        if(curCommitBlobSha1.containsKey(fileName)) {
+        if (curCommitBlobSha1.containsKey(fileName)) {
             index = readObject(INDEX, HashMap.class);
-            if(curFileSha1.equals(workFileSha1)) {
+            if (curFileSha1.equals(workFileSha1)) {
                 if (index.containsKey(fileName)) {
                     index.remove(fileName);
                     writeObject(INDEX, index);
@@ -135,7 +135,7 @@ public class Repository {
         index = readObject(INDEX, HashMap.class);
 
 
-        if (args.length !=3 && index.isEmpty()) {
+        if (args.length != 3 && index.isEmpty()) {
             message("No changes added to the commit.");
             System.exit(0);
         }
@@ -156,7 +156,7 @@ public class Repository {
         index.clear();
         writeObject(INDEX, index);
 
-        if(args.length == 3) {
+        if (args.length == 3) {
             newCommit.setSecondParent(args[2]);
         }
 
@@ -259,14 +259,14 @@ public class Repository {
 
             /** 有无要求的commit*/
             String commitSha1 = resolve(args[1]);
-            if(commitSha1 == null) {
+            if (commitSha1 == null) {
                 message("No commit with that id exists.");
                 System.exit(0);
             }
             File commitFile = getObjectFile(args[1]);
             //if (!commitFile.exists()) {
-                //message("No commit with that id exists.");
-                //System.exit(0);
+            //message("No commit with that id exists.");
+            //System.exit(0);
             //}
 
             /** 取出所需commit, 以及它的map*/
@@ -299,27 +299,27 @@ public class Repository {
         }
     }
 
-    public static void rm(String args[]) {
-        File rmfile = join(CWD,args[1]);
+    public static void rm(String[] args) {
+        File rmfile = join(CWD, args[1]);
 
         Commit curCommit = getCurrentCommit();
-        HashMap<String, String> curCommitbBlobSha1= curCommit.getBlobSha1();
+        HashMap<String, String> curCommitbBlobSha1 = curCommit.getBlobSha1();
         index = readObject(INDEX, HashMap.class);
 
-        if(!curCommitbBlobSha1.containsKey(args[1]) && !index.containsKey(args[1])) {
+        if (!curCommitbBlobSha1.containsKey(args[1]) && !index.containsKey(args[1])) {
             message("No reason to remove the file.");
             System.exit(0);
         }
 
-        if(index.containsKey(args[1])) {
+        if (index.containsKey(args[1])) {
             index.remove(args[1]);
         }
-        if(curCommitbBlobSha1.containsKey(args[1])) {
-            index.put(args[1],null);
+        if (curCommitbBlobSha1.containsKey(args[1])) {
+            index.put(args[1], null);
             restrictedDelete(rmfile);
         }
 
-        writeObject(INDEX,index);
+        writeObject(INDEX, index);
     }
 
     //    public static void save_commit(Commit ){
@@ -350,7 +350,7 @@ public class Repository {
         }
     }
 
-    public static void find(String args[]) {
+    public static void find(String[] args) {
         boolean flag = false;
         File[] prefixDirs = OBJ_DIR.listFiles();
         for (File prefixDir : prefixDirs) {
@@ -365,7 +365,7 @@ public class Repository {
                         // 尝试反序列化为Commit对象
                         Commit c = readObject(objFile, Commit.class);
 
-                        if(c.getMessage().equals(args[1])) {
+                        if (c.getMessage().equals(args[1])) {
                             flag = true;
                             System.out.println(id);
                         }
@@ -376,7 +376,7 @@ public class Repository {
                 }
             }
         }
-        if(!flag) {
+        if (!flag) {
             message("Found no commit with that message.");
             System.exit(0);
         }
@@ -389,13 +389,13 @@ public class Repository {
         String branchName = headContent.substring("ref: refs/heads/".length());
         System.out.println("=== Branches ===");
         File[] branches = HEADS.listFiles();
-        for(File branch: branches) {
+        for (File branch: branches) {
             words.add(branch.getName());
         }
         Collections.sort(words);
-        for(String e: words) {
-            if(e.equals(branchName)) {
-                System.out.println("*"+e);
+        for (String e: words) {
+            if (e.equals(branchName)) {
+                System.out.println("*" + e);
             } else {
                 System.out.println(e);
             }
@@ -405,31 +405,31 @@ public class Repository {
 
         index = readObject(INDEX, HashMap.class);
         System.out.println("=== Staged Files ===");
-        for(Map.Entry<String, String> entry: index.entrySet()) {
+        for (Map.Entry<String, String> entry: index.entrySet()) {
             String filename = entry.getKey();
             String blobSha1 = entry.getValue();
-            if(blobSha1 != null) {
+            if (blobSha1 != null) {
                 //System.out.println(filename);
                 words.add(filename);
             }
         }
         Collections.sort(words);
-        for(String e: words) {
+        for (String e: words) {
             System.out.println(e);
         }
         System.out.println();
         words.clear();
 
         System.out.println("=== Removed Files ===");
-        for(Map.Entry<String, String> entry: index.entrySet()) {
+        for (Map.Entry<String, String> entry: index.entrySet()) {
             String filename = entry.getKey();
             String blobSha1 = entry.getValue();
-            if(blobSha1 == null) {
+            if (blobSha1 == null) {
                 words.add(filename);
             }
         }
         Collections.sort(words);
-        for(String e: words) {
+        for (String e: words) {
             System.out.println(e);
         }
         System.out.println();
@@ -445,7 +445,7 @@ public class Repository {
     public static void branch(String[] args) {
         File branch = join(HEADS, args[1]);
 
-        if(branch.exists()) {
+        if (branch.exists()) {
             message("A branch with that name already exists.");
             System.exit(0);
         }
@@ -457,7 +457,7 @@ public class Repository {
     public static void rmBranch(String[] args) {
         File branch = join(HEADS, args[1]);
 
-        if(!branch.exists()) {
+        if (!branch.exists()) {
             message("A branch with that name does not exist.");
             System.exit(0);
         }
@@ -465,7 +465,7 @@ public class Repository {
         String headContent = readContentsAsString(HEAD);
         String curBranchName = headContent.substring("ref: refs/heads/".length());
 
-        if(args[1].equals(curBranchName)) {
+        if (args[1].equals(curBranchName)) {
             message("Cannot remove the current branch.");
             System.exit(0);
         }
@@ -477,7 +477,7 @@ public class Repository {
         //reset [commit id]  先找到完整sha1  写烂了，只能这样减少改动了
         String resetCommitSha1 = resolve(args[1]);
 
-        if(resetCommitSha1 == null) {
+        if (resetCommitSha1 == null) {
             message("No commit with that id exists.");
             System.exit(0);
         }
@@ -531,20 +531,20 @@ public class Repository {
     }
 
     public static void merge(String[] args) {
-        index = readObject(INDEX,HashMap.class);
-        if(!index.isEmpty()) {
+        index = readObject(INDEX, HashMap.class);
+        if (!index.isEmpty()) {
             message("You have uncommitted changes.");
             System.exit(0);
         }
 
-        File branch = join(HEADS,args[1]);
-        if(!branch.exists())  {
+        File branch = join(HEADS, args[1]);
+        if (!branch.exists())  {
             message("A branch with that name does not exist.");
             System.exit(0);
         }
 
         File nowBranch = getNowBranch();
-        if(branch.getName().equals(nowBranch.getName())) {
+        if (branch.getName().equals(nowBranch.getName())) {
             message("Cannot merge a branch with itself.");
             System.exit(0);
         }
@@ -584,7 +584,9 @@ public class Repository {
                 }
                 addParentsToQueue(currentSha1, queueA, visitedA);
             }
-            if(findLca) break;
+            if (findLca) {
+                break;
+            }
             // 检查队列B的当前层
             int sizeB = queueB.size();
             for (int i = 0; i < sizeB; i++) {
@@ -600,20 +602,20 @@ public class Repository {
         }
 
         //先处理在一条路上的情况
-        if(splitCommitSha1.equals(branchCommitSha1)) {
+        if (splitCommitSha1.equals(branchCommitSha1)) {
             message("Given branch is an ancestor of the current branch.");
             System.exit(0);
         }
-        if(splitCommitSha1.equals(nowBranchCommitSha1)) {
+        if (splitCommitSha1.equals(nowBranchCommitSha1)) {
             //writeContents(nowBranch, branchCommitSha1);
-            String[] a = {"checkout",args[1]};
+            String[] a = {"checkout", args[1]};
             checkout(a);
             message("Current branch fast-forwarded.");
             System.exit(0);
         }
 
         //三方文件差异比较,签出 暂存
-        HashMap<String, String> newIndexForCommit = getNewIndexForCommit(nowBranchCommit,branchCommit,splitCommit);
+        HashMap<String, String> newIndexForCommit = getNewIndexForCommit(nowBranchCommit, branchCommit, splitCommit);
 
         /** If an untracked file in the current commit would be overwritten or deleted by the merge,
          print There is an untracked file in the way; delete it, or add and commit it first. and exit;
@@ -629,13 +631,13 @@ public class Repository {
         }
         */
         HashMap<String, String> curBlobSha1 = nowBranchCommit.getBlobSha1();
-        for(String filename : newIndexForCommit.keySet()) {
-            if(!curBlobSha1.containsKey(filename)) {
+        for (String filename : newIndexForCommit.keySet()) {
+            if (!curBlobSha1.containsKey(filename)) {
                 File file = join(CWD, filename);
-                if(file.exists()) {
+                if (file.exists()) {
                     byte[] fileContent = readContents(file);
                     String fileSha1 = sha1(fileContent);
-                    if(!fileSha1.equals(newIndexForCommit.get(filename))) {
+                    if (!fileSha1.equals(newIndexForCommit.get(filename))) {
                         message("There is an untracked file in the way; delete it, or add and commit it first.");
                         System.exit(0);
                     }
@@ -669,11 +671,11 @@ public class Repository {
             Blob blob = getBlob(blobSha1);
             writeContents(filePath, blob.getContent());
         }*/
-        for(HashMap.Entry<String,String> entry : newIndexForCommit.entrySet()) {
+        for (HashMap.Entry<String, String> entry : newIndexForCommit.entrySet()) {
             String filename = entry.getKey();
             String blobSha1 = entry.getValue();
             File filePath = join(CWD, filename);
-            if(blobSha1 == null) {
+            if (blobSha1 == null) {
                 restrictedDelete(filePath);
             } else {
                 Blob blob = getBlob(blobSha1);
@@ -688,10 +690,10 @@ public class Repository {
         }
 
         //写入暂存区
-        writeObject(INDEX,newIndexForCommit);
+        writeObject(INDEX, newIndexForCommit);
 
         //自动提交
-        String[] a = {"commit","Merged "+branch.getName()+" into "+nowBranch.getName()+".",branchCommitSha1};
+        String[] a = {"commit", "Merged " + branch.getName() + " into " + nowBranch.getName() + ".", branchCommitSha1};
         Repository.commit(a);
 
     }
@@ -714,36 +716,36 @@ public class Repository {
             String splitSha1 = splitBlobs.get(fileName);
             String headSha1 = currentBlobs.get(fileName);
             String otherSha1 = otherBlobs.get(fileName);
-            if(splitSha1 != null && headSha1 != null && otherSha1 != null) {
-                if(splitSha1.equals(headSha1) && !splitSha1.equals(otherSha1)) {
-                    newIndex.put(fileName,otherSha1);
+            if (splitSha1 != null && headSha1 != null && otherSha1 != null) {
+                if (splitSha1.equals(headSha1) && !splitSha1.equals(otherSha1)) {
+                    newIndex.put(fileName, otherSha1);
                 }
-                if(!splitSha1.equals(headSha1) && !splitSha1.equals(otherSha1) && !headSha1.equals(otherSha1)){
+                if (!splitSha1.equals(headSha1) && !splitSha1.equals(otherSha1) && !headSha1.equals(otherSha1)) {
                     conflictDetected = true;
                     handleConflict(fileName, headSha1, otherSha1, newIndex);
                 }
             }
-            if(splitSha1 != null) {
-                if(splitSha1.equals(headSha1) && otherSha1 == null) {
-                    newIndex.put(fileName,null);
+            if (splitSha1 != null) {
+                if (splitSha1.equals(headSha1) && otherSha1 == null) {
+                    newIndex.put(fileName, null);
                 }
-                if(headSha1 != null && otherSha1 == null && !splitSha1.equals(headSha1)) {
+                if (headSha1 != null && otherSha1 == null && !splitSha1.equals(headSha1)) {
                     conflictDetected = true;
                     handleConflict(fileName, headSha1, otherSha1, newIndex);
                 }
-                if(otherSha1 != null && headSha1 == null && !splitSha1.equals(otherSha1)) {
+                if (otherSha1 != null && headSha1 == null && !splitSha1.equals(otherSha1)) {
                     conflictDetected = true;
                     handleConflict(fileName, headSha1, otherSha1, newIndex);
                 }
             }
-            if(splitSha1 == null) {
-                if(otherSha1 != null) {
-                    if(headSha1 != null && !headSha1.equals(otherSha1)) {
+            if (splitSha1 == null) {
+                if (otherSha1 != null) {
+                    if (headSha1 != null && !headSha1.equals(otherSha1)) {
                         //冲突
                         conflictDetected = true;
                         handleConflict(fileName, headSha1, otherSha1, newIndex);
                     }
-                    newIndex.put(fileName,otherSha1);
+                    newIndex.put(fileName, otherSha1);
                 }
             }
         }
@@ -779,25 +781,25 @@ public class Repository {
         // 创建冲突blob
         Blob conflictBlob = new Blob(conflictContent.getBytes());
         String conflictSha1 = sha1(conflictContent.getBytes());
-        saveBlob(conflictBlob,conflictSha1); // 确保有保存blob的方法
+        saveBlob(conflictBlob, conflictSha1); // 确保有保存blob的方法
 
         newIndex.put(fileName, conflictSha1);
     }
-    private static void addParentsToQueue(String commitSha1, Queue<String> queue,HashMap<String, Integer> visited)  {
+    private static void addParentsToQueue(String commitSha1, Queue<String> queue, HashMap<String, Integer> visited)  {
         Commit commit = getCommit(commitSha1);
         Integer currentDepth = visited.get(commitSha1);
         //System.out.println(currentDepth.toString());
 
         String firstParentSha1 = commit.getFirstParent();
         String secondParentSha1 = commit.getSecondParent();
-        if(firstParentSha1 != null && !visited.containsKey(firstParentSha1)) {
+        if (firstParentSha1 != null && !visited.containsKey(firstParentSha1)) {
             Commit firstParent = getCommit(firstParentSha1);
-            visited.put(firstParentSha1,currentDepth + 1);
+            visited.put(firstParentSha1, currentDepth + 1);
             queue.add(firstParentSha1);
         }
-        if(secondParentSha1 != null && !visited.containsKey(secondParentSha1)) {
+        if (secondParentSha1 != null && !visited.containsKey(secondParentSha1)) {
             Commit secondParent = getCommit(secondParentSha1);
-            visited.put(secondParentSha1,currentDepth + 1);
+            visited.put(secondParentSha1, currentDepth + 1);
             queue.add(secondParentSha1);
         }
     }
@@ -896,7 +898,9 @@ public class Repository {
 
         // 定位objects子目录
         File objDir = join(OBJ_DIR, dirName);
-        if (!objDir.exists()) return null;
+        if (!objDir.exists()) {
+            return null;
+        }
 
         String fullHash = null;
         for (File f : objDir.listFiles()) {

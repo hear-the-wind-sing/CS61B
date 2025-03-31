@@ -53,10 +53,10 @@ public class Commit implements Serializable, Dumpable {
         this.blobSha1 = new HashMap<>(lastCommit.getBlobSha1());
         //this.blobSha1 = lastCommit.getBlobSha1();
         //this.blobSha1.putAll(index);
-        for(Map.Entry<String,String> entry:index.entrySet()) {
+        for (Map.Entry<String, String> entry:index.entrySet()) {
             String filename = entry.getKey();
             String blobSha1 = entry.getValue();
-            if(blobSha1 == null && this.blobSha1.containsKey(filename)) {
+            if (blobSha1 == null && this.blobSha1.containsKey(filename)) {
                 this.blobSha1.remove(filename);
             } else {
                 this.blobSha1.put(filename, blobSha1);
@@ -105,17 +105,21 @@ public class Commit implements Serializable, Dumpable {
         System.out.println();
     }
 
-//    public String getCommitSha1() {
-//        return sha1(serialize(this));
-//    }
+    //    public String getCommitSha1() {
+    //        return sha1(serialize(this));
+    //    }
     public String getCommitSha1() {
         StringBuilder tmp = new StringBuilder();
         for (String name : blobSha1.keySet()) {
             tmp.append(blobSha1.get(name));
         }
-        String fp = firstParent,sp = secondParent;
-        if(firstParent == null) fp = "";
-        if(secondParent == null) sp = "";
+        String fp = firstParent, sp = secondParent;
+        if (firstParent == null) {
+            fp = "";
+        }
+        if (secondParent == null) {
+            sp = "";
+        }
         return Utils.sha1(message, date.toString(), fp, sp, tmp.toString());
     }
     public void setSecondParent(String sha1) {
