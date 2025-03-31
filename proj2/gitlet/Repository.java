@@ -5,19 +5,18 @@ import java.io.IOException;
 
 import static gitlet.Utils.*;
 
-// TODO: any imports you need here
-import java.nio.charset.StandardCharsets;
+//
 import java.util.*;
 
 /** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
+ *
  *  does at a high level.
  *
- *  @author TODO
+ *  @author hear-the-wind-sing
  */
 public class Repository {
     /**
-     * TODO: add instance variables here.
+     *
      *
      * List all instance variables of the Repository class here with a useful
      * comment above them describing what that variable represents and how that
@@ -52,12 +51,12 @@ public class Repository {
      * index文件存“暂存区”
      */
     public static final File INDEX = join(GITLET_DIR, "index");
-    /* TODO: fill in the rest of this class. */
+    /*  */
     /**
      * HEAD文件存放所在commit
      */
     public static final File HEAD = join(GITLET_DIR, "HEAD");
-    public static HashMap<String, String> index = new HashMap<>();
+    private static HashMap<String, String> index = new HashMap<>();
 
     public static void init() {
 
@@ -644,22 +643,22 @@ public class Repository {
                 }
             }
         }
-//        HashMap<String, String> curBlobSha1 = nowBranchCommit.getBlobSha1();
-//        HashMap<String, String> splitBlobs = splitCommit.getBlobSha1();
-//        for (String filename : newIndexForCommit.keySet()) {
-//            if (!curBlobSha1.containsKey(filename)) {
-//                File file = join(CWD, filename);
-//                // 允许覆盖 split 点存在的文件
-//                if (file.exists() && !splitBlobs.containsKey(filename)) {
-//                    byte[] fileContent = readContents(file);
-//                    String fileSha1 = sha1(fileContent);
-//                    if (!fileSha1.equals(newIndexForCommit.get(filename))) {
-//                        message("There is an untracked file in the way; delete it, or add and commit it first.");
-//                        System.exit(0);
-//                    }
-//                }
-//            }
-//        }
+        //        HashMap<String, String> curBlobSha1 = nowBranchCommit.getBlobSha1();
+        //        HashMap<String, String> splitBlobs = splitCommit.getBlobSha1();
+        //        for (String filename : newIndexForCommit.keySet()) {
+        //            if (!curBlobSha1.containsKey(filename)) {
+        //                File file = join(CWD, filename);
+        //                // 允许覆盖 split 点存在的文件
+        //                if (file.exists() && !splitBlobs.containsKey(filename)) {
+        //                    byte[] fileContent = readContents(file);
+        //                    String fileSha1 = sha1(fileContent);
+        //                    if (!fileSha1.equals(newIndexForCommit.get(filename))) {
+        //                        message("There is an untracked file in the way; delete it, or add and commit it first.");
+        //                        System.exit(0);
+        //                    }
+        //                }
+        //            }
+        //        }
 
         /**检出文件
          参考代码：

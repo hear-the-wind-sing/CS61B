@@ -1,9 +1,9 @@
 package gitlet;
 
-// TODO: any imports you need here
+//
 import java.io.File;
 import java.io.Serializable;
-import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.Date; //
 import java.util.Map;
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
@@ -11,14 +11,14 @@ import java.text.SimpleDateFormat;
 import static gitlet.Utils.*;
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
+ *
  *  does at a high level.
  *
- *  @author TODO
+ *  @author hear-the-wind-sing
  */
 public class Commit implements Serializable, Dumpable {
     /**
-     * TODO: add instance variables here.
+     *
      *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
@@ -32,7 +32,7 @@ public class Commit implements Serializable, Dumpable {
     private String secondParent;
     private HashMap<String, String> blobSha1;
     //private
-    /* TODO: fill in the rest of this class. */
+    /*  */
     public Commit(String message, String firstParent) {
         this.message = message;
         if (firstParent == null) {
@@ -55,11 +55,11 @@ public class Commit implements Serializable, Dumpable {
         //this.blobSha1.putAll(index);
         for (Map.Entry<String, String> entry:index.entrySet()) {
             String filename = entry.getKey();
-            String blobSha1 = entry.getValue();
-            if (blobSha1 == null && this.blobSha1.containsKey(filename)) {
+            String sha1 = entry.getValue();
+            if (sha1 == null && this.blobSha1.containsKey(filename)) {
                 this.blobSha1.remove(filename);
             } else {
-                this.blobSha1.put(filename, blobSha1);
+                this.blobSha1.put(filename, sha1);
             }
         }
     }

@@ -1,12 +1,11 @@
 package gitlet;
 
 import java.io.File;
-import java.util.ResourceBundle;
 
 import static gitlet.Utils.join;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author TODO
+ *  @author hear-the-wind-sing
  */
 public class Main {
 
@@ -14,7 +13,6 @@ public class Main {
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) {
-        // TODO: what if args is empty?
         if (args.length == 0) {
             Utils.message("Please enter a command.");
             System.exit(0);
@@ -26,16 +24,13 @@ public class Main {
 
         switch (firstArg) {
             case "init":
-                // TODO: handle the `init` command
                 // validateNumArgs(args,1);
                 Repository.init();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
                 validateNumArgs(args, 2);
                 Repository.add(args);
                 break;
-            // TODO: FILL THE REST IN
             case "commit":
                 //validateNumArgs(args,2);
                 Repository.commit(args);

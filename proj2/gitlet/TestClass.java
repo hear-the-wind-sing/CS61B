@@ -1,10 +1,9 @@
 package gitlet;
-import static org.junit.Assert.*;
 import org.junit.Test;
-import java.util.*;
+
 import java.io.File;
 import static gitlet.Utils.*;
-public class test {
+public class TestClass {
     public static final File CWD = new File(System.getProperty("user.dir"));
     @Test
     public void test1() {
