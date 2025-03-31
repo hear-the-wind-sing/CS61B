@@ -732,7 +732,7 @@ public class Repository {
             }
             if(splitSha1 == null) {
                 if(otherSha1 != null) {
-                    if(headSha1 != null && headSha1.equals(otherSha1)) {
+                    if(headSha1 != null && !headSha1.equals(otherSha1)) {
                         //冲突
                         conflictDetected = true;
                         handleConflict(fileName, headSha1, otherSha1, newIndex);
