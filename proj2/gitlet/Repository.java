@@ -205,12 +205,13 @@ public class Repository {
                 if (!curBlobSha1.containsKey(filename)) {
                     File file = join(CWD, filename);
                     if (file.exists()) {
-                        message("There is an untracked file in the way; delete it, or add and commit it first.");
+                        message("There is an untracked file in the way; "
+                                + "delete it, or add and commit it first.");
                         System.exit(0);
                     }
                 }
-            }
-            for (String filename : curBlobSha1.keySet()) {  /** 删除在当前分支中跟踪但不存在于签出分支中的任何文件*/
+            }   /** 删除在当前分支中跟踪但不存在于签出分支中的任何文件*/
+            for (String filename : curBlobSha1.keySet()) {
                 if (!branchBlobSha1.containsKey(filename)) {
                     File fileToDelete = join(CWD, filename);
                     if (fileToDelete.exists()) {
@@ -218,20 +219,20 @@ public class Repository {
                     }
                 }
             }
-            for (Map.Entry<String, String> entry : branchBlobSha1.entrySet()) {   /** 写入目标分支文件到工作目录*/
-                String filename = entry.getKey();
+            for (Map.Entry<String, String> entry : branchBlobSha1.entrySet()) {
+                String filename = entry.getKey();  /** 写入目标分支文件到工作目录*/
                 String blobSha1 = entry.getValue();
                 File filePath = join(CWD, filename);
                 // 从对象库读取 Blob 内容并写入文件
                 Blob blob = getBlob(blobSha1);
                 writeContents(filePath, blob.getContent());
             }
-            writeContents(HEAD, "ref: refs/heads/" + args[1]);    /** 将目标分支写入HEAD */
+            writeContents(HEAD, "ref: refs/heads/" + args[1]);   /** 将目标分支写入HEAD */
             HashMap<String, String> newIndex = new HashMap<>();   /** 清空暂存区*/
             writeObject(INDEX, newIndex);
         } else {
-            String fileName = args[3];     /** java gitlet.Main checkout [commit id] -- [file name]*/
-            String commitSha1 = resolve(args[1]);      /** 有无要求的commit*/
+            String fileName = args[3];  /** java gitlet.Main checkout [commit id] -- [file name]*/
+            String commitSha1 = resolve(args[1]);     /** 有无要求的commit*/
             if (commitSha1 == null) {
                 message("No commit with that id exists.");
                 System.exit(0);
@@ -296,14 +297,18 @@ public class Repository {
                 // 遍历每个子目录中的文件
                 File[] objFiles = prefixDir.listFiles();
                 for (File objFile : objFiles) {
-                    // 构建完整对象ID
-                    String id = prefixDir.getName() + objFile.getName();
+                    try {
+                        // 构建完整对象ID
+                        String id = prefixDir.getName() + objFile.getName();
 
-                    // 尝试反序列化为Commit对象
-                    Commit c = readObject(objFile, Commit.class);
+                        // 尝试反序列化为Commit对象
+                        Commit c = readObject(objFile, Commit.class);
 
-                    // 如果反序列化成功，打印
-                    c.print(id);
+                        // 如果反序列化成功，打印
+                        c.print(id);
+                    } catch (IllegalArgumentException e) {
+                        continue;
+                    }
                 }
             }
         }
@@ -317,15 +322,19 @@ public class Repository {
                 // 遍历每个子目录中的文件
                 File[] objFiles = prefixDir.listFiles();
                 for (File objFile : objFiles) {
-                    // 构建完整对象ID
-                    String id = prefixDir.getName() + objFile.getName();
+                    try {
+                        // 构建完整对象ID
+                        String id = prefixDir.getName() + objFile.getName();
 
-                    // 尝试反序列化为Commit对象
-                    Commit c = readObject(objFile, Commit.class);
+                        // 尝试反序列化为Commit对象
+                        Commit c = readObject(objFile, Commit.class);
 
-                    if (c.getMessage().equals(args[1])) {
-                        flag = true;
-                        System.out.println(id);
+                        if (c.getMessage().equals(args[1])) {
+                            flag = true;
+                            System.out.println(id);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        continue;
                     }
                 }
             }
@@ -449,7 +458,8 @@ public class Repository {
             if (!curBlobSha1.containsKey(filename)) {
                 File file = join(CWD, filename);
                 if (file.exists()) {
-                    message("There is an untracked file in the way; delete it, or add and commit it first.");
+                    message("There is an untracked file in the way; "
+                            + "delete it, or add and commit it first.");
                     System.exit(0);
                 }
             }
@@ -528,7 +538,8 @@ public class Repository {
             message("Current branch fast-forwarded.");
             System.exit(0);
         }          //三方文件差异比较,签出 暂存
-        HashMap<String, String> newIndexForCommit = getNewIndexForCmt(nowBranchCommit, branchCommit, splitCommit);
+        HashMap<String, String> newIndexForCommit = getNewIndexForCmt(nowBranchCommit,
+                branchCommit, splitCommit);
         HashMap<String, String> curBlobSha1 = nowBranchCommit.getBlobSha1();
         for (String filename : newIndexForCommit.keySet()) {
             if (!curBlobSha1.containsKey(filename)) {
@@ -537,7 +548,8 @@ public class Repository {
                     byte[] fileContent = readContents(file);
                     String fileSha1 = sha1(fileContent);
                     if (!fileSha1.equals(newIndexForCommit.get(filename))) {
-                        message("There is an untracked file in the way; delete it, or add and commit it first.");
+                        message("There is an untracked file in the way; "
+                                + "delete it, or add and commit it first.");
                         System.exit(0);
                     }
                 }
@@ -555,12 +567,14 @@ public class Repository {
             }
         }
         writeObject(INDEX, newIndexForCommit); //写入暂存区
-        String[] a = {"commit", "Merged " + branch.getName() + " into " + nowBranch.getName() + ".", branchCommitSha1};
+        String[] a = {"commit", "Merged " + branch.getName() + " into "
+                + nowBranch.getName() + ".", branchCommitSha1};
         Repository.commit(a);           //自动提交
     }
 
     public static String getSplitSha1(Queue<String> queueA, Queue<String> queueB,
-                               HashMap<String, Integer> visitedA, HashMap<String, Integer> visitedB) {
+                                      HashMap<String, Integer> visitedA,
+                                      HashMap<String, Integer> visitedB) {
         String splitCommitSha1 = "";
         boolean findLca = false;
         while (!findLca && (!queueA.isEmpty() || !queueB.isEmpty())) {
@@ -590,7 +604,8 @@ public class Repository {
         }
         return splitCommitSha1;
     }
-    public static HashMap<String, String> getNewIndexForCmt(Commit currentHead, Commit otherHead, Commit splitCommit) {
+    public static HashMap<String, String> getNewIndexForCmt(Commit currentHead,
+                                                            Commit otherHead, Commit splitCommit) {
         boolean conflictDetected = false;
         HashMap<String, String> newIndex = new HashMap<>();
 
@@ -612,7 +627,8 @@ public class Repository {
                 if (splitSha1.equals(headSha1) && !splitSha1.equals(otherSha1)) {
                     newIndex.put(fileName, otherSha1);
                 }
-                if (!splitSha1.equals(headSha1) && !splitSha1.equals(otherSha1) && !headSha1.equals(otherSha1)) {
+                if (!splitSha1.equals(headSha1)
+                        && !splitSha1.equals(otherSha1) && !headSha1.equals(otherSha1)) {
                     conflictDetected = true;
                     handleConflict(fileName, headSha1, otherSha1, newIndex);
                 }
@@ -665,7 +681,8 @@ public class Repository {
         }
 
         // 生成冲突内容
-        String conflictContent =  "<<<<<<< HEAD\n" + currentContent + "=======\n" + otherContent + ">>>>>>>\n";
+        String conflictContent =  "<<<<<<< HEAD\n" + currentContent
+                + "=======\n" + otherContent + ">>>>>>>\n";
 
         //调试
         //System.out.println(conflictContent);
@@ -677,7 +694,9 @@ public class Repository {
 
         newIndex.put(fileName, conflictSha1);
     }
-    private static void addParentsToQueue(String commitSha1, Queue<String> queue, HashMap<String, Integer> visited)  {
+    private static void addParentsToQueue(String commitSha1,
+                                          Queue<String> queue,
+                                          HashMap<String, Integer> visited)  {
         Commit commit = getCommit(commitSha1);
         Integer currentDepth = visited.get(commitSha1);
         //System.out.println(currentDepth.toString());

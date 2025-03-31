@@ -45,7 +45,8 @@ public class Commit implements Serializable, Dumpable {
         this.blobSha1 = new HashMap<>();
     }
 
-    public Commit(String message, String firstParent, Commit lastCommit, HashMap<String, String> index) {
+    public Commit(String message, String firstParent, Commit lastCommit,
+                  HashMap<String, String> index) {
         this.message = message;
         this.date = new Date();
         this.firstParent = firstParent;
@@ -96,7 +97,8 @@ public class Commit implements Serializable, Dumpable {
         System.out.println("===");
         System.out.println("commit " + sha1);
         if (firstParent != null && secondParent != null) {
-            System.out.println("Merge: " + firstParent.substring(0, 7) + " " + secondParent.substring(0, 7));
+            System.out.println("Merge: " + firstParent.substring(0, 7) + " "
+                    + secondParent.substring(0, 7));
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z");
         System.out.println("Date: " + dateFormat.format(date));
