@@ -170,50 +170,35 @@ public class Repository {
         saveCommit(newCommit, newCommitSha1);
     }
 
-    public static void checkout(String[] args) {
-        /** java gitlet.Main checkout -- [file name] */
+    public static void checkout(String[] args) { /** java gitlet.Main checkout -- [file name] */
         if (args[1].equals("--")) {
             String fileName = args[2];
-            /** 取出当前commit, 以及它的map*/
-            Commit curCommit = getCurrentCommit();
+            Commit curCommit = getCurrentCommit(); /** 取出当前commit, 以及它的map*/
             HashMap<String, String> curBlobSha1 = curCommit.getBlobSha1();
-
-            /** 查看有无要求文件*/
-            if (!curBlobSha1.containsKey(fileName)) {
+            if (!curBlobSha1.containsKey(fileName)) {      /** 查看有无要求文件*/
                 message("File does not exist in that commit.");
                 System.exit(0);
             }
-
-            /** 写出要求文件*/
-            String fileSha1 = curBlobSha1.get(fileName);
+            String fileSha1 = curBlobSha1.get(fileName); /** 写出要求文件*/
             Blob b = getBlob(fileSha1);
             File filePath = join(CWD, fileName);
             writeContents(filePath, b.getContent());
         } else if (args.length == 2) {
-            /** java gitlet.Main checkout [branch name] */
-            File checkBranch = join(HEADS, args[1]);
-
-            /**是否存在目标分支*/
-            if (!checkBranch.exists()) {
+            File checkBranch = join(HEADS, args[1]); /** java gitlet.Main checkout [branch name] */
+            if (!checkBranch.exists()) {    /**是否存在目标分支*/
                 message("No such branch exists.");
                 System.exit(0);
             }
-
             String headContent = readContentsAsString(HEAD);
             String branchName = headContent.substring("ref: refs/heads/".length());
-
-            /**是否是当前分支*/
-            if (args[1].equals(branchName)) {
+            if (args[1].equals(branchName)) {      /**是否是当前分支*/
                 message("No need to checkout the current branch.");
                 System.exit(0);
             }
-
-            /** 取出map*/
-            Commit curCommit = getCurrentCommit();
+            Commit curCommit = getCurrentCommit();     /** 取出map*/
             Commit branchCommit = getBranchCommit(args[1]);
             HashMap<String, String> curBlobSha1 = curCommit.getBlobSha1();
             HashMap<String, String> branchBlobSha1 = branchCommit.getBlobSha1();
-
             /** 如果工作文件在当前分支中未被跟踪，并且将被签出、打印
              *  There is an untracked file in the way; delete it,or add and commit it first.*/
             for (String filename : branchBlobSha1.keySet()) {
@@ -225,9 +210,7 @@ public class Repository {
                     }
                 }
             }
-
-            /** 删除在当前分支中跟踪但不存在于签出分支中的任何文件*/
-            for (String filename : curBlobSha1.keySet()) {
+            for (String filename : curBlobSha1.keySet()) {  /** 删除在当前分支中跟踪但不存在于签出分支中的任何文件*/
                 if (!branchBlobSha1.containsKey(filename)) {
                     File fileToDelete = join(CWD, filename);
                     if (fileToDelete.exists()) {
@@ -235,9 +218,7 @@ public class Repository {
                     }
                 }
             }
-
-            /** 写入目标分支文件到工作目录*/
-            for (Map.Entry<String, String> entry : branchBlobSha1.entrySet()) {
+            for (Map.Entry<String, String> entry : branchBlobSha1.entrySet()) {   /** 写入目标分支文件到工作目录*/
                 String filename = entry.getKey();
                 String blobSha1 = entry.getValue();
                 File filePath = join(CWD, filename);
@@ -245,41 +226,24 @@ public class Repository {
                 Blob blob = getBlob(blobSha1);
                 writeContents(filePath, blob.getContent());
             }
-
-            /** 将目标分支写入HEAD */
-            writeContents(HEAD, "ref: refs/heads/" + args[1]);
-
-            /** 清空暂存区*/
-            HashMap<String, String> index = new HashMap<>();
-            writeObject(INDEX, index);
+            writeContents(HEAD, "ref: refs/heads/" + args[1]);    /** 将目标分支写入HEAD */
+            HashMap<String, String> newIndex = new HashMap<>();   /** 清空暂存区*/
+            writeObject(INDEX, newIndex);
         } else {
-            /** java gitlet.Main checkout [commit id] -- [file name]*/
-            String fileName = args[3];
-
-            /** 有无要求的commit*/
-            String commitSha1 = resolve(args[1]);
+            String fileName = args[3];     /** java gitlet.Main checkout [commit id] -- [file name]*/
+            String commitSha1 = resolve(args[1]);      /** 有无要求的commit*/
             if (commitSha1 == null) {
                 message("No commit with that id exists.");
                 System.exit(0);
             }
             File commitFile = getObjectFile(args[1]);
-            //if (!commitFile.exists()) {
-            //message("No commit with that id exists.");
-            //System.exit(0);
-            //}
-
-            /** 取出所需commit, 以及它的map*/
-            Commit commit = getCommit(commitSha1);
+            Commit commit = getCommit(commitSha1);    /** 取出所需commit, 以及它的map*/
             HashMap<String, String> blobSha1 = commit.getBlobSha1();
-
-            /** 查看有无要求文件*/
-            if (!blobSha1.containsKey(fileName)) {
+            if (!blobSha1.containsKey(fileName)) {     /** 查看有无要求文件*/
                 message("File does not exist in that commit.");
                 System.exit(0);
             }
-
-            /** 写出要求文件*/
-            String fileSha1 = blobSha1.get(fileName);
+            String fileSha1 = blobSha1.get(fileName);  /** 写出要求文件*/
             Blob b = getBlob(fileSha1);
             File filePath = join(CWD, fileName);
             writeContents(filePath, b.getContent());
@@ -332,18 +296,14 @@ public class Repository {
                 // 遍历每个子目录中的文件
                 File[] objFiles = prefixDir.listFiles();
                 for (File objFile : objFiles) {
-                    try {
-                        // 构建完整对象ID
-                        String id = prefixDir.getName() + objFile.getName();
+                    // 构建完整对象ID
+                    String id = prefixDir.getName() + objFile.getName();
 
-                        // 尝试反序列化为Commit对象
-                        Commit c = readObject(objFile, Commit.class);
+                    // 尝试反序列化为Commit对象
+                    Commit c = readObject(objFile, Commit.class);
 
-                        // 如果反序列化成功，打印
-                        c.print(id);
-                    } catch (Exception e) {
-                        // 忽略非commit对象
-                    }
+                    // 如果反序列化成功，打印
+                    c.print(id);
                 }
             }
         }
@@ -357,20 +317,15 @@ public class Repository {
                 // 遍历每个子目录中的文件
                 File[] objFiles = prefixDir.listFiles();
                 for (File objFile : objFiles) {
-                    try {
-                        // 构建完整对象ID
-                        String id = prefixDir.getName() + objFile.getName();
+                    // 构建完整对象ID
+                    String id = prefixDir.getName() + objFile.getName();
 
-                        // 尝试反序列化为Commit对象
-                        Commit c = readObject(objFile, Commit.class);
+                    // 尝试反序列化为Commit对象
+                    Commit c = readObject(objFile, Commit.class);
 
-                        if (c.getMessage().equals(args[1])) {
-                            flag = true;
-                            System.out.println(id);
-                        }
-
-                    } catch (Exception e) {
-                        // 忽略非commit对象
+                    if (c.getMessage().equals(args[1])) {
+                        flag = true;
+                        System.out.println(id);
                     }
                 }
             }
@@ -525,8 +480,8 @@ public class Repository {
         writeContents(nowBranch, args[1]);
 
         /** 清空暂存区*/
-        HashMap<String, String> index = new HashMap<>();
-        writeObject(INDEX, index);
+        HashMap<String, String> newIndex = new HashMap<>();
+        writeObject(INDEX, newIndex);
     }
 
     public static void merge(String[] args) {
@@ -535,100 +490,45 @@ public class Repository {
             message("You have uncommitted changes.");
             System.exit(0);
         }
-
         File branch = join(HEADS, args[1]);
         if (!branch.exists())  {
             message("A branch with that name does not exist.");
             System.exit(0);
         }
-
         File nowBranch = getNowBranch();
         if (branch.getName().equals(nowBranch.getName())) {
             message("Cannot merge a branch with itself.");
             System.exit(0);
         }
-
-        //取出commit
-        String splitCommitSha1 = "";
+        String splitCommitSha1 = "";  //取出commit
         String branchCommitSha1 = readContentsAsString(branch);
         String nowBranchCommitSha1 = readContentsAsString(nowBranch);
         Commit splitCommit = null;
         Commit branchCommit = getCommit(branchCommitSha1);
         Commit nowBranchCommit = getCommit(nowBranchCommitSha1);
-
-        //得到split point
-        Queue<String> queueA = new LinkedList<>();
+        Queue<String> queueA = new LinkedList<>(); //得到split point
         Queue<String> queueB = new LinkedList<>();
-
         HashMap<String, Integer> visitedA = new HashMap<>(); // SHA-1 → depth
         HashMap<String, Integer> visitedB = new HashMap<>();
-
         queueA.add(branchCommitSha1);
         visitedA.put(branchCommitSha1, 0);
         queueB.add(nowBranchCommitSha1);
         visitedB.put(nowBranchCommitSha1, 0);
 
-        boolean findLca = false;
+        splitCommitSha1 = getSplitSha1(queueA, queueB, visitedA, visitedB);
+        splitCommit = getCommit(splitCommitSha1);
 
-        while (!findLca && (!queueA.isEmpty() || !queueB.isEmpty())) {
-            // 检查队列A的当前层
-            int sizeA = queueA.size();
-            for (int i = 0; i < sizeA; i++) {
-                String currentSha1 = queueA.poll();
-                if (visitedB.containsKey(currentSha1)) {
-                    splitCommit = getCommit(currentSha1);
-                    splitCommitSha1 = currentSha1;
-                    findLca = true;
-                    break;
-                }
-                addParentsToQueue(currentSha1, queueA, visitedA);
-            }
-            if (findLca) {
-                break;
-            }
-            // 检查队列B的当前层
-            int sizeB = queueB.size();
-            for (int i = 0; i < sizeB; i++) {
-                String currentSha1 = queueB.poll();
-                if (visitedA.containsKey(currentSha1)) {
-                    splitCommit = getCommit(currentSha1);
-                    splitCommitSha1 = currentSha1;
-                    findLca = true;
-                    break;
-                }
-                addParentsToQueue(currentSha1, queueB, visitedB);
-            }
-        }
-
-        //先处理在一条路上的情况
-        if (splitCommitSha1.equals(branchCommitSha1)) {
+        if (splitCommitSha1.equals(branchCommitSha1)) {  //先处理在一条路上的情况
             message("Given branch is an ancestor of the current branch.");
             System.exit(0);
         }
         if (splitCommitSha1.equals(nowBranchCommitSha1)) {
-            //writeContents(nowBranch, branchCommitSha1);
             String[] a = {"checkout", args[1]};
             checkout(a);
             message("Current branch fast-forwarded.");
             System.exit(0);
-        }
-
-        //三方文件差异比较,签出 暂存
-        HashMap<String, String> newIndexForCommit = getNewIndexForCommit(nowBranchCommit, branchCommit, splitCommit);
-
-        /** If an untracked file in the current commit would be overwritten or deleted by the merge,
-         print There is an untracked file in the way; delete it, or add and commit it first. and exit;
-         参考代码：
-        for (String filename : branchBlobSha1.keySet()) {
-            if (!curBlobSha1.containsKey(filename)) {
-                File file = join(CWD, filename);
-                if (file.exists()) {
-                    message("There is an untracked file in the way; delete it, or add and commit it first.");
-                    System.exit(0);
-                }
-            }
-        }
-        */
+        }          //三方文件差异比较,签出 暂存
+        HashMap<String, String> newIndexForCommit = getNewIndexForCmt(nowBranchCommit, branchCommit, splitCommit);
         HashMap<String, String> curBlobSha1 = nowBranchCommit.getBlobSha1();
         for (String filename : newIndexForCommit.keySet()) {
             if (!curBlobSha1.containsKey(filename)) {
@@ -643,33 +543,6 @@ public class Repository {
                 }
             }
         }
-        //        HashMap<String, String> curBlobSha1 = nowBranchCommit.getBlobSha1();
-        //        HashMap<String, String> splitBlobs = splitCommit.getBlobSha1();
-        //        for (String filename : newIndexForCommit.keySet()) {
-        //            if (!curBlobSha1.containsKey(filename)) {
-        //                File file = join(CWD, filename);
-        //                // 允许覆盖 split 点存在的文件
-        //                if (file.exists() && !splitBlobs.containsKey(filename)) {
-        //                    byte[] fileContent = readContents(file);
-        //                    String fileSha1 = sha1(fileContent);
-        //                    if (!fileSha1.equals(newIndexForCommit.get(filename))) {
-        //                        message("There is an untracked file in the way; delete it, or add and commit it first.");
-        //                        System.exit(0);
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        /**检出文件
-         参考代码：
-         for (Map.Entry<String, String> entry : resetBlobSha1.entrySet()) {
-            String filename = entry.getKey();
-            String blobSha1 = entry.getValue();
-            File filePath = join(CWD, filename);
-            // 从对象库读取 Blob 内容并写入文件
-            Blob blob = getBlob(blobSha1);
-            writeContents(filePath, blob.getContent());
-        }*/
         for (HashMap.Entry<String, String> entry : newIndexForCommit.entrySet()) {
             String filename = entry.getKey();
             String blobSha1 = entry.getValue();
@@ -678,26 +551,46 @@ public class Repository {
                 restrictedDelete(filePath);
             } else {
                 Blob blob = getBlob(blobSha1);
-
-                //调试
-                //String a = new String(blob.getContent());
-                //System.out.println(filename);
-                //System.out.println(a);
-
                 writeContents(filePath, blob.getContent());
             }
         }
-
-        //写入暂存区
-        writeObject(INDEX, newIndexForCommit);
-
-        //自动提交
+        writeObject(INDEX, newIndexForCommit); //写入暂存区
         String[] a = {"commit", "Merged " + branch.getName() + " into " + nowBranch.getName() + ".", branchCommitSha1};
-        Repository.commit(a);
-
+        Repository.commit(a);           //自动提交
     }
 
-    public static HashMap<String, String> getNewIndexForCommit(Commit currentHead, Commit otherHead, Commit splitCommit) {
+    public static String getSplitSha1(Queue<String> queueA, Queue<String> queueB,
+                               HashMap<String, Integer> visitedA, HashMap<String, Integer> visitedB) {
+        String splitCommitSha1 = "";
+        boolean findLca = false;
+        while (!findLca && (!queueA.isEmpty() || !queueB.isEmpty())) {
+            int sizeA = queueA.size(); // 检查队列A的当前层
+            for (int i = 0; i < sizeA; i++) {
+                String currentSha1 = queueA.poll();
+                if (visitedB.containsKey(currentSha1)) {
+                    splitCommitSha1 = currentSha1;
+                    findLca = true;
+                    break;
+                }
+                addParentsToQueue(currentSha1, queueA, visitedA);
+            }
+            if (findLca) {
+                break;
+            }
+            int sizeB = queueB.size(); // 检查队列B的当前层
+            for (int i = 0; i < sizeB; i++) {
+                String currentSha1 = queueB.poll();
+                if (visitedA.containsKey(currentSha1)) {
+                    splitCommitSha1 = currentSha1;
+                    findLca = true;
+                    break;
+                }
+                addParentsToQueue(currentSha1, queueB, visitedB);
+            }
+        }
+        return splitCommitSha1;
+    }
+    public static HashMap<String, String> getNewIndexForCmt(Commit currentHead, Commit otherHead, Commit splitCommit) {
         boolean conflictDetected = false;
         HashMap<String, String> newIndex = new HashMap<>();
 
